@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.CategoryRequest;
 import sq.project.md5.perfumer.model.entity.Category;
+import sq.project.md5.perfumer.model.entity.Product;
 import sq.project.md5.perfumer.repository.ICategoryRepository;
 import sq.project.md5.perfumer.repository.IProductRepository;
 import sq.project.md5.perfumer.service.ICategoryService;
@@ -26,17 +27,29 @@ public class CategoryServiceImpl implements ICategoryService {
 
     private final IProductRepository productRepository;
 
-
     @Override
-    public List<Category> getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
-
-        if (categories.isEmpty()) {
-            throw new NoSuchElementException("Không có danh mục nào.");
+    public Page<Category> getAllCategory(Pageable pageable, String search) {
+        Page<Category> categories;
+        if(search == null || search.isEmpty()) {
+            categories = categoryRepository.findAll(pageable);
+        }else{
+            categories = categoryRepository.findAllByCategoryNameContainsIgnoreCase(search,pageable);
         }
-
         return categories;
     }
+
+
+
+//    @Override
+//    public List<Category> getAllCategories() {
+//        List<Category> categories = categoryRepository.findAll();
+//
+//        if (categories.isEmpty()) {
+//            throw new NoSuchElementException("Không có danh mục nào.");
+//        }
+//
+//        return categories;
+//    }
 
     @Override
     public Category getCategoryById(Long id) {

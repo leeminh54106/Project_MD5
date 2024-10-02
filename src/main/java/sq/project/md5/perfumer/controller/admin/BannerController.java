@@ -37,7 +37,7 @@ public class BannerController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<DataResponse> deleteCategory(@PathVariable("id") Long id) throws CustomException {
+    public ResponseEntity<DataResponse> deleteBanner(@PathVariable("id") Long id) throws CustomException {
         bannerService.deleteBanner(id);
         return new ResponseEntity<>(new DataResponse("Đã xóa thành công banner có mã: "+id, HttpStatus.OK), HttpStatus.OK);
     }

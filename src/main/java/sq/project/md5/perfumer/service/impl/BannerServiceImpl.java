@@ -64,6 +64,7 @@ public class BannerServiceImpl implements IBannerService {
         }
 
         Banner banner = Banner.builder()
+                .id(existingBanner.getId())
                 .bannerName(bannerRequest.getBannerName())
                 .urlImage(uploadFile.uploadLocal(bannerRequest.getUrlImage()))
                 .build();
