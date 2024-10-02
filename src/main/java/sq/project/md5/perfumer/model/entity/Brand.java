@@ -24,9 +24,5 @@ public class Brand {
     @Column( columnDefinition = "TEXT")
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
-
     private Boolean status;
 }

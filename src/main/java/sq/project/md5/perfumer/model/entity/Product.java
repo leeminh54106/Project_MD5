@@ -30,6 +30,10 @@ public class Product {
 
     @Column( columnDefinition = "TEXT")
     private String description;
+    @Column( columnDefinition = "TEXT")
+    private String guarantee;
+    @Column( columnDefinition = "TEXT")
+    private String instruct;
 
     @Column( length = 255)
     private String image;

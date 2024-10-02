@@ -26,6 +26,10 @@ public class ProductRequest {
 
     private String description;
 
+    private String guarantee;
+
+    private String instruct;
+
     @NotNull(message = "Ảnh không được để trống")
     private MultipartFile image;
 
