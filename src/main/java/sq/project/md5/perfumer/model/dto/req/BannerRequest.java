@@ -1,6 +1,7 @@
 package sq.project.md5.perfumer.model.dto.req;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -11,5 +12,5 @@ public class BannerRequest {
 
     private String bannerName;
 
-    private String urlImage;
+    private MultipartFile urlImage;
 }

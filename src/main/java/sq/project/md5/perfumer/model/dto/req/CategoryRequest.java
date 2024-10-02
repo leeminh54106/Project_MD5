@@ -16,5 +16,5 @@ public class CategoryRequest {
     private String categoryName;
 
     private String description;
-    private Boolean status;
+    private Boolean status = true;
 }
