@@ -17,10 +17,10 @@ import sq.project.md5.perfumer.service.impl.CategoryServiceImpl;
 public class CategoryController {
     private final CategoryServiceImpl categoryService;
 
-    @GetMapping
-    public ResponseEntity<DataResponse> getAllCategories( ) {
-        return new ResponseEntity<>(new DataResponse(categoryService.getAllCategories(), HttpStatus.OK), HttpStatus.OK);
-    }
+//    @GetMapping
+//    public ResponseEntity<DataResponse> getAllCategories( ) {
+//        return new ResponseEntity<>(new DataResponse(categoryService.getAllCategories(), HttpStatus.OK), HttpStatus.OK);
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse> getCategoryById(@PathVariable("id") Long id) {
@@ -44,7 +44,7 @@ public class CategoryController {
     }
 
 
-    @GetMapping("/searchByCategoryName")
+    @GetMapping("")
     public ResponseEntity<DataResponse> searchByCategoryName(@RequestParam(name = "searchName", defaultValue = "")String searchName,
                                                              @RequestParam(name = "page", defaultValue = "0")Integer page,
                                                              @RequestParam(name = "pageSize", defaultValue = "2")Integer pageSize,
