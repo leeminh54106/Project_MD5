@@ -38,14 +38,6 @@ public class Product {
     @Column( length = 255)
     private String image;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-    @ManyToOne
-    @JoinColumn(name = "brand_id")
-    private Brand brand;
-
 //    @JsonFormat(pattern = "dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
     private Date createdAt;
@@ -55,4 +47,12 @@ public class Product {
     private Date updatedAt;
 
     private Boolean status;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 }
