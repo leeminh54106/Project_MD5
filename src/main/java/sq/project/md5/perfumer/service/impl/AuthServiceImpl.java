@@ -52,9 +52,9 @@ public class AuthServiceImpl implements IAuthService {
             throw new IllegalArgumentException("Tên đăng nhập đã tồn tại");
         }
 
-        if(userRepository.existsByPhone(formRegister.getPhone())) {
-            throw new IllegalArgumentException("Số điện thoại đã tồn tại");
-        }
+//        if(userRepository.existsByPhone(formRegister.getPhone())) {
+//            throw new IllegalArgumentException("Số điện thoại đã tồn tại");
+//        }
 
         if (userRepository.existsByEmail(formRegister.getEmail())) {
             throw new IllegalArgumentException("Email đã tồn tại");
@@ -62,10 +62,10 @@ public class AuthServiceImpl implements IAuthService {
 
         Users user = Users.builder()
                 .email(formRegister.getEmail())
-                .fullName(formRegister.getFullName())
+//                .fullName(formRegister.getFullName())
                 .username(formRegister.getUsername())
                 .password(passwordEncoder.encode(formRegister.getPassword()))
-                .phone(formRegister.getPhone())
+//                .phone(formRegister.getPhone())
                 .status(true)
                 .createdAt(new Date())
                 .updatedAt(new Date())
@@ -105,7 +105,7 @@ public class AuthServiceImpl implements IAuthService {
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(formLogin.getUsername(), formLogin.getPassword()));
         } catch (AuthenticationException ex) {
-            throw new CustomException("Tên người dùng hoặc mật khẩu không đúng",HttpStatus.BAD_REQUEST);
+            throw new CustomException("Tên đăng nhập hoặc mật khẩu không chính xác",HttpStatus.BAD_REQUEST);
             //409: Lỗi không hợp lệ
         }
         MyUserDetailCustom userDetailCustom = (MyUserDetailCustom) authentication.getPrincipal();
