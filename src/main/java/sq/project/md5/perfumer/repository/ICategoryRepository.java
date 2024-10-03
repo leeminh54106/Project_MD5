@@ -10,6 +10,8 @@ import sq.project.md5.perfumer.model.entity.Category;
 
 @Repository
 public interface ICategoryRepository extends JpaRepository<Category, Long> {
+
+    Page<Category> findAllByCategoryNameContainsIgnoreCase(String categoryName, Pageable pageable);
     //@Query("select c from Category c where c.categoryName like concat('%',:categoryName,'%')")
     Page<Category> findAllByCategoryNameContains(String categoryName, Pageable pageable);
     boolean existsByCategoryName(String categoryName);
