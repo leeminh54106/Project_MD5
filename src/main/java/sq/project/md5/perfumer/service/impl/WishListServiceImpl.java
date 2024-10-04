@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sq.project.md5.perfumer.advice.SuccessException;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.WishListRequest;
@@ -23,7 +24,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-
 public class WishListServiceImpl implements IWishListService {
 
     private final IUserService userService;
@@ -39,7 +39,9 @@ public class WishListServiceImpl implements IWishListService {
                 .orElseThrow(() -> new NoSuchElementException("Sản phẩm này không tồn tại"));
 
         if (wishListRepository.existsByUserAndProduct(user, product)) {
-            throw new CustomException("Sản phẩm này đã có trong danh sách yêu thích của bạn", HttpStatus.BAD_REQUEST);
+            wishListRepository.deleteByUserIdAndProductId(user.getId(),product.getId());
+//            return null;
+            throw new SuccessException("Đã xóa thành công sản phẩm yêu thích");
         }
 
         WishList wishList = WishList.builder()

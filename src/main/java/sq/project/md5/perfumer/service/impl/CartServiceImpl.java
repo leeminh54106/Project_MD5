@@ -34,7 +34,7 @@ public class CartServiceImpl implements ICartService {
     @Override
     public ShoppingCart addToCart(AddToCartRequest addToCart) {
 
-        if (addToCart.getProductId() == null) {
+        if (addToCart.getProductDetailId() == null) {
             throw new IllegalArgumentException("Mã sản phẩm không được phép rỗng");
         }
         if (addToCart.getQuantity() == null || addToCart.getQuantity() <= 0) {
@@ -42,7 +42,7 @@ public class CartServiceImpl implements ICartService {
         }
 
         Users user = userService.getCurrentLoggedInUser();
-        ProductDetail productDetail = productDetailRepository.findById(addToCart.getProductId())
+        ProductDetail productDetail = productDetailRepository.findById(addToCart.getProductDetailId())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sản phẩm này"));
 
         if(!productDetail.getStatus()) {

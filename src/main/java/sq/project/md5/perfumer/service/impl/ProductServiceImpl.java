@@ -35,44 +35,47 @@ public class ProductServiceImpl implements IProductService {
 
     private final ICartRepository cartRepository;
 
-
+    private final IProductDetailRepository productDetailRepository;
 
     @Override
     public Page<Product> getAllProduct(Pageable pageable, String search) {
         Page<Product> products;
-        if(search == null || search.isEmpty()) {
+        if (search == null || search.isEmpty()) {
             products = productRepository.findAll(pageable);
-        }else{
-            products = productRepository.findProductByProductNameContainsIgnoreCase(search,pageable);
+        } else {
+            products = productRepository.findProductByProductNameContainsIgnoreCase(search, pageable);
         }
         return products;
     }
 
     @Override
     public Product getProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại sản phẩm nào có mã: "+id));
+        return productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại sản phẩm nào có mã: " + id));
     }
 
     @Override
-    public Product addProduct(ProductRequest product) throws CustomException {
-//        if (productRepository.existsByProductNameAndCategory_Id(product.getProductName(), product.getCategoryId())) {
-//            throw new CustomException("Sản phẩm đã tồn tại trong danh mục", HttpStatus.CONFLICT);
-//        }
+    public Product addProduct(ProductRequest productRequest) throws CustomException {
+        if (productRepository.existsByProductNameAndCategory_Id(productRequest.getProductName(), productRequest.getCategoryId())) {
+            throw new CustomException("Sản phẩm đã tồn tại trong danh mục", HttpStatus.CONFLICT);
+        }
 
-        if (productRepository.existsByProductName(product.getProductName())) {
+        if (productRepository.existsByProductName(productRequest.getProductName())) {
             throw new CustomException("Tên sản phẩm đã tồn tại", HttpStatus.BAD_REQUEST);
         }
 
-        Category category = categoryService.getCategoryById(product.getCategoryId());
+        Category category = categoryService.getCategoryById(productRequest.getCategoryId());
         if (!category.getStatus()) {
             throw new CustomException("Danh mục không hoạt động, không thể thêm sản phẩm", HttpStatus.BAD_REQUEST);
         }
-        
+
         Product prod = Product.builder()
-                .productName(product.getProductName())
-                .description(product.getDescription())
-                .image(uploadFile.uploadLocal(product.getImage()))
-                .status(product.getStatus())
+                .sku(productRequest.getSku())
+                .productName(productRequest.getProductName())
+                .description(productRequest.getDescription())
+                .guarantee(productRequest.getGuarantee())
+                .instruct(productRequest.getInstruct())
+                .image(uploadFile.uploadLocal(productRequest.getImage()))
+                .status(productRequest.getStatus())
                 .createdAt(new Date())
                 .updatedAt(new Date())
                 .build();
@@ -115,53 +118,37 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public void deleteProduct(Long id) throws CustomException {
-       Product product = productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại sản phẩm: " + id));
+        Product product = productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại sản phẩm: " + id));
 
 //        List<OrderDetails> orderDetails = orderDetailRepository.findByProductDetail(product);
 //        if (!orderDetails.isEmpty()) {
 //            throw new CustomException("Không thể xóa sản phẩm, Sản phẩm đã tồn tại trong đơn hàng", HttpStatus.BAD_REQUEST);
 //        }
 
-        List<WishList> wishList = wishListRepository.findByProduct(product);
-        if(!wishList.isEmpty()) {
-            throw new CustomException("Không thể xóa sản phẩm, Sản phẩm đã tồn tại trong sản phẩm yêu thích", HttpStatus.BAD_REQUEST);
-        }
+//        List<WishList> wishList = wishListRepository.findByProduct(product);
+//        if(!wishList.isEmpty()) {
+//            throw new CustomException("Không thể xóa sản phẩm, Sản phẩm đã tồn tại trong sản phẩm yêu thích", HttpStatus.BAD_REQUEST);
+//        }
 
+        List<ProductDetail> productDetails = productDetailRepository.findByProduct(product);
+        if (!productDetails.isEmpty()) {
+            throw new CustomException("Không thể xóa sản phẩm, Đang tồn tại sản phẩm chi tiết!", HttpStatus.BAD_REQUEST);
+        }
         productRepository.deleteById(id);
     }
 
     @Override
-    public Page<Product> getProductWithPaginationAndSorting(Integer page, Integer pageSize, String sortBy, String orderBy, String searchName) throws CustomException {
-        Pageable pageable;
-        if (!sortBy.isEmpty()) {
-            Sort sort;
-            switch (sortBy) {
-                case "asc":
-                    sort = Sort.by(sortBy).ascending();
-                    break;
-                case "desc":
-                    sort = Sort.by(sortBy).descending();
-                    break;
-                default:
-                    sort = Sort.by(sortBy).ascending();
-            }
-            pageable = PageRequest.of(page, pageSize, sort);
-        } else {
-            pageable = PageRequest.of(page, pageSize);
-        }
-
+    public Page<Product> getProductWithPaginationAndSorting(Pageable pageable, String search) {
         Page<Product> products;
+        if (search.isEmpty()) {
 
-        if (searchName.isEmpty()) {
-            products =  productRepository.findAll(pageable);
+            products = productRepository.findAll(pageable);
         } else {
-            products =  productRepository.findAllByProductNameContains(searchName, pageable);
+            products = productRepository.findAllByProductNameContains(search, pageable);
         }
-
-        if(!products.hasContent()) {
-            throw new IllegalArgumentException("Không tìm thấy sản phẩm bạn tìm kiếm !");
+        if (products.isEmpty()) {
+            throw new NoSuchElementException("Không tìm thấy sản phẩm có tên là:" + search);
         }
-
         return products;
     }
 
@@ -191,9 +178,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public List<Product> getLatestProduct() {
-       // return productRepository.getLatestProducts(PageRequest.of(0,5));
-        return  productRepository.findTop5ByOrderByCreatedAtAsc();
-//        return productRepository.findTop5ByOrderByIdDesc();
+        return productRepository.findTop5ByOrderByCreatedAtAsc();
     }
 
 

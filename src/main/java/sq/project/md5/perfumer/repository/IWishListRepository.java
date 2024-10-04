@@ -1,10 +1,12 @@
 package sq.project.md5.perfumer.repository;
 
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import sq.project.md5.perfumer.model.entity.Product;
 import sq.project.md5.perfumer.model.entity.Users;
 import sq.project.md5.perfumer.model.entity.WishList;
@@ -25,4 +27,7 @@ public interface IWishListRepository extends JpaRepository<WishList, Long> {
     Integer countUsersWhoLikedProduct(@Param("productId") Long productId);
 
     boolean existsByUserAndProduct(Users users, Product product);
+
+    @Transactional
+    void deleteByUserIdAndProductId(Long userId, Long productId);
 }

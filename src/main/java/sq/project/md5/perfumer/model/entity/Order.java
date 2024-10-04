@@ -39,14 +39,14 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status;
 
-    @Column( length = 100)
-    private String receiveName;
+//    @Column( length = 100)
+//    private String receiveName;
 
-    @Column( length = 254)
-    private String receiveAddress;
 
-    @Column( length = 15)
-    private String receivePhone;
+    private Long receiveAddressId;
+
+//    @Column( length = 15)
+//    private String receivePhone;
 
     @Column( length = 100)
     private String note;

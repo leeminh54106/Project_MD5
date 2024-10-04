@@ -1,5 +1,7 @@
 package sq.project.md5.perfumer.model.dto.req;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.Date;
@@ -15,11 +17,11 @@ public class OrderRequest {
 
     private Double totalPrice;
 
-    private String receiveName;
+    //    private String receiveName;
+    @NotNull(message = "ID địa chỉ nhận không được để trống")
+    private Long receiveAddressId;
 
-    private String receiveAddress;
-
-    private String receivePhone;
+//    private String receivePhone;
 
     private String note;
 

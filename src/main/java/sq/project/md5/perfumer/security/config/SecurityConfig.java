@@ -76,10 +76,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//Không cho phép lữu trữ phiên làm việc
                 .authorizeHttpRequests(auth ->
 //                        auth.requestMatchers("/admin/**").hasRole("ADMIN"))
-                                auth.requestMatchers("/api.example.com/v1/admin1/**").hasAuthority("ROLE_ADMIN")
-                                        .requestMatchers("/api.example.com/v1/user1/**").hasAuthority("ROLE_USER")
-                                        .requestMatchers("/api.example.com/v1/manager1/**").hasAuthority("ROLE_MANAGER")
-                                        .requestMatchers("/api.example.com/v1/user-manager1/**", "/api.example.com/v1/user-client/**").hasAnyAuthority("ROLE_USER", "ROLE_MANAGER")
+                                auth.requestMatchers("/api.example.com/v1/admin/**").hasAuthority("ROLE_ADMIN")
+                                        .requestMatchers("/api.example.com/v1/user/**").hasAuthority("ROLE_USER")
+                                        .requestMatchers("/api.example.com/v1/manager/**").hasAuthority("ROLE_MANAGER")
+                                        .requestMatchers("/api.example.com/v1/user-manager/**", "/api.example.com/v1/user-client/**").hasAnyAuthority("ROLE_USER", "ROLE_MANAGER")
                                         .anyRequest().permitAll() // tất cả quyền
                 )
                 .authenticationProvider(authenticationProvider())
