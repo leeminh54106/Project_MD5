@@ -1,7 +1,6 @@
 package sq.project.md5.perfumer.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -53,12 +52,6 @@ public class OrderServiceImpl implements IOrderService {
             throw new NoSuchElementException("Giỏ hàng trống, không có sản phẩm nào để đặt hàng");
         }
 
-        // Tìm địa chỉ theo ID
-//        Address address = addressService.findByIdAndUser(id, user);
-//        if (address == null) {
-//            throw new NoSuchElementException("Không tìm thấy địa chỉ cho người dùng. Vui lòng thêm địa chỉ trước khi đặt hàng.");
-//        }
-
         Address address = addressService.getDefaultAddressForUser(user);
 
         if (address == null) {
@@ -69,32 +62,30 @@ public class OrderServiceImpl implements IOrderService {
                 .serialNumber(UUID.randomUUID().toString())
                 .totalPrice(calculateTotalPrice(shoppingCartsItems))
                 .status(OrderStatus.WAITING)
-                .receiveAddress(address.getFullAddress())
-                .receivePhone(address.getPhone())
-                .receiveName(address.getReceiveName())
+                .receiveAddressId(address.getId())
                 .note(orderRequest.getNote())
                 .createdAt(new Date())
                 .receivedAt(addDays(new Date(), 4))
                 .build();
         order = orderRepository.save(order);
 
-        //Luu danh sách chi tiết đơn hàng
-        Order findOder = order;
-        List<OrderDetails> list = shoppingCartsItems.stream().map(
-                item->{
-                    ProductDetail productDetail = item.getProductDetail();
-        if(item.getOrderQuantity() > productDetail.getStockQuantity()) {
-            throw new NoSuchElementException("Số lượng đặt hàng vượt quá số lượng sản phẩm");
+        List<OrderDetails> list = new ArrayList<>();
+        for (ShoppingCart shoppingCart : shoppingCartsItems) {
+            ProductDetail productDetail = shoppingCart.getProductDetail();
+            if(productDetail.getStockQuantity()<shoppingCart.getOrderQuantity()){
+                throw new NoSuchElementException("Số lượng đặt hàng vượt quá số lượng sản phẩm");
+            }
+            OrderDetails orderDetails = new OrderDetails();
+            orderDetails.setOrder(order);
+            orderDetails.setProductDetail(shoppingCart.getProductDetail());
+            orderDetails.setName(shoppingCart.getProductDetail().getProduct().getProductName());
+            orderDetails.setUnitPrice(shoppingCart.getProductDetail().getUnitPrice());
+            orderDetails.setOrderQuantity(shoppingCart.getOrderQuantity());
+            list.add(orderDetails);
+
+            productDetail.setStockQuantity(productDetail.getStockQuantity() - shoppingCart.getOrderQuantity());
+            productDetailRepository.save(productDetail);
         }
-        productDetail.setStockQuantity(productDetail.getStockQuantity() - item.getOrderQuantity());
-        productDetailRepository.save(productDetail);
-                    return OrderDetails.builder()
-                            .productDetail(productDetail)
-                            .name(productDetail.getProduct().getProductName())
-                            .unitPrice(productDetail.getUnitPrice())
-                            .orderQuantity(item.getOrderQuantity())
-                            .build();
-                }).collect(Collectors.toList());
         List<OrderDetails> orderDetails = orderDetailRepository.saveAll(list);
         order.setOrderDetails(orderDetails);
         cartRepository.deleteAll(shoppingCartsItems);
@@ -140,9 +131,7 @@ public class OrderServiceImpl implements IOrderService {
                 .userId(order.getUsers().getId())
                 .serialNumber(order.getSerialNumber())
                 .totalPrice(order.getTotalPrice())
-                .receiveAddress(order.getReceiveAddress())
-                .receivePhone(order.getReceivePhone())
-                .receiveName(order.getReceiveName())
+                .receiveAddressId(order.getReceiveAddressId())
                 .note(order.getNote())
                 .status(order.getStatus())
                 .createdAt(order.getCreatedAt())
@@ -168,9 +157,7 @@ public class OrderServiceImpl implements IOrderService {
                 .userId(order.getUsers().getId())
                 .serialNumber(order.getSerialNumber())
                 .totalPrice(order.getTotalPrice())
-                .receiveAddress(order.getReceiveAddress())
-                .receivePhone(order.getReceivePhone())
-                .receiveName(order.getReceiveName())
+                .receiveAddressId(order.getReceiveAddressId())
                 .note(order.getNote())
                 .status(order.getStatus())
                 .createdAt(order.getCreatedAt())

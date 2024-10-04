@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.BrandRequest;
 import sq.project.md5.perfumer.model.entity.Brand;
+import sq.project.md5.perfumer.model.entity.Product;
 import sq.project.md5.perfumer.repository.IBrandRepository;
 import sq.project.md5.perfumer.service.IBrandService;
 
@@ -69,6 +70,7 @@ public class BrandServiceImpl implements IBrandService {
 
     @Override
     public void deleteBrand(Long id) throws CustomException {
+        brandRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại thương hiệu: " + id));
     brandRepository.deleteById(id);
     }
 

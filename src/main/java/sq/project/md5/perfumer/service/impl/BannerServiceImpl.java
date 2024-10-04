@@ -10,11 +10,7 @@ import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.BannerRequest;
 import sq.project.md5.perfumer.model.entity.Banner;
-import sq.project.md5.perfumer.model.entity.Category;
-import sq.project.md5.perfumer.model.entity.Product;
-import sq.project.md5.perfumer.model.entity.WishList;
 import sq.project.md5.perfumer.repository.IBannerRepository;
-import sq.project.md5.perfumer.repository.ICategoryRepository;
 import sq.project.md5.perfumer.service.IBannerService;
 
 import java.util.List;
@@ -73,6 +69,7 @@ public class BannerServiceImpl implements IBannerService {
 
     @Override
     public void deleteBanner(Long id){
+        bannerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại banner: " + id));
         bannerRepository.deleteById(id);
     }
 

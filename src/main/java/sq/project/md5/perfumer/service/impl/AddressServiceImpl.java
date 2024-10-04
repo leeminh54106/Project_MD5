@@ -40,6 +40,7 @@ public class AddressServiceImpl implements IAddressService {
                 .phone(address.getPhone())
                 .receiveName(address.getReceiveName())
                 .isDefault(address.getIsDefault())
+
                 .build();
         return addressRepository.save(newAddress);
     }
@@ -70,7 +71,7 @@ public class AddressServiceImpl implements IAddressService {
     public AddressResponse getAddressById(Long id) {
         Users user = userService.getCurrentLoggedInUser();
         Address address = addressRepository.findByIdAndUsers(id, user)
-                .orElseThrow(() -> new NoSuchElementException("Không tồn tại địa ch có id: "+id));
+                .orElseThrow(() -> new NoSuchElementException("Không tồn tại địa chỉ có id: "+id));
         return AddressResponse.builder()
                 .id(address.getId())
                 .fullAddress(address.getFullAddress())

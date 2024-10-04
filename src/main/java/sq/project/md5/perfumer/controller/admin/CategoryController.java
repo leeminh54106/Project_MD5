@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.CategoryRequest;
 import sq.project.md5.perfumer.model.dto.resp.DataResponse;
+import sq.project.md5.perfumer.model.entity.Category;
 import sq.project.md5.perfumer.service.impl.CategoryServiceImpl;
 
 
@@ -21,10 +22,10 @@ public class CategoryController {
     private final CategoryServiceImpl categoryService;
 
 
-    @GetMapping
-    public ResponseEntity<DataResponse> getAllCategories(@PageableDefault(page = 0,size = 5, sort = "id",direction = Sort.Direction.ASC) Pageable pageable, @RequestParam(defaultValue = "" ) String search) {
-        return new ResponseEntity<>(new DataResponse(categoryService.getAllCategory(pageable,search),HttpStatus.OK),HttpStatus.OK);
-    }
+//    @GetMapping
+//    public ResponseEntity<DataResponse> getAllCategories(@PageableDefault(page = 0,size = 5, sort = "id",direction = Sort.Direction.ASC) Pageable pageable, @RequestParam(defaultValue = "" ) String search) {
+//        return new ResponseEntity<>(new DataResponse(categoryService.getAllCategory(pageable,search),HttpStatus.OK),HttpStatus.OK);
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse> getCategoryById(@PathVariable("id") Long id) {
@@ -40,6 +41,11 @@ public class CategoryController {
     public ResponseEntity<DataResponse> updateCategory(@Valid @RequestBody CategoryRequest category, @PathVariable("id") Long id) throws CustomException {
         return new ResponseEntity<>(new DataResponse(categoryService.updateCategory(category, id), HttpStatus.OK), HttpStatus.OK);
     }
+    @PutMapping("/changeStatus/{id}")
+    public ResponseEntity<DataResponse> changeStatusCategory( @PathVariable("id") Long id) throws CustomException {
+        categoryService.changeStatusCategory(id);
+        return new ResponseEntity<>(new DataResponse("Đã đổi thành công trạng thái danh mục có mã: "+id, HttpStatus.OK), HttpStatus.OK);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<DataResponse> deleteCategory(@PathVariable("id") Long id) throws CustomException {
@@ -48,14 +54,22 @@ public class CategoryController {
     }
 
 
-    @GetMapping("/categorySearchName")
-    public ResponseEntity<DataResponse> searchByCategoryName(@RequestParam(name = "searchName", defaultValue = "")String searchName,
-                                                             @RequestParam(name = "page", defaultValue = "0")Integer page,
-                                                             @RequestParam(name = "pageSize", defaultValue = "2")Integer pageSize,
-                                                             @RequestParam(name = "sortBy", defaultValue = "")String sortBy,
-                                                             @RequestParam(name = "orderBy", defaultValue = "asc")String orderBy) {
+//    @GetMapping
+//    public ResponseEntity<DataResponse> searchByCategoryName(@RequestParam(name = "searchName", defaultValue = "")String searchName,
+//                                                             @RequestParam(name = "page", defaultValue = "0")Integer page,
+//                                                             @RequestParam(name = "pageSize", defaultValue = "2")Integer pageSize,
+//                                                             @RequestParam(name = "sortBy", defaultValue = "")String sortBy,
+//                                                             @RequestParam(name = "orderBy", defaultValue = "asc")String orderBy) {
+//
+//        return new ResponseEntity<>(new DataResponse(categoryService.getCategoryWithPaginationAndSorting(page, pageSize, sortBy, orderBy, searchName),HttpStatus.OK), HttpStatus.OK);
+//    }
 
-        return new ResponseEntity<>(new DataResponse(categoryService.getCategoryWithPaginationAndSorting(page, pageSize, sortBy, orderBy, searchName).getContent(), HttpStatus.OK), HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<DataResponse> searchByCategoryName(@PageableDefault(page = 0,
+            size = 3,
+            sort = "id",
+            direction = Sort.Direction.ASC) Pageable pageable,@RequestParam(value = "search", defaultValue = "") String search) {
+        return new ResponseEntity<>(new DataResponse(categoryService.getCategoryWithPaginationAndSorting(pageable, search),HttpStatus.OK), HttpStatus.OK);
     }
 
 }
