@@ -36,12 +36,9 @@ public class AdminController {
 
 
     @GetMapping("/searchByName")
-    public ResponseEntity<DataResponse> searchUserByName(@RequestParam(name = "searchName", defaultValue = "")String searchName,
-                                                            @RequestParam(name = "page", defaultValue = "0")Integer page,
-                                                            @RequestParam(name = "pageSize", defaultValue = "2")Integer pageSize,
-                                                            @RequestParam(name = "sortBy", defaultValue = "")String sortBy,
-                                                            @RequestParam(name = "orderBy", defaultValue = "asc")String orderBy){
-        return new ResponseEntity<>(new DataResponse(userService.getUsersWithPaginationAndSorting(page, pageSize, sortBy, orderBy, searchName).getContent(),HttpStatus.OK),HttpStatus.OK);
+    public ResponseEntity<DataResponse> searchUserByName(@PageableDefault(page = 0, size = 3, sort = "id",
+    direction = Sort.Direction.ASC)Pageable pageable,@RequestParam (value = "search",defaultValue = "") String search){
+        return new ResponseEntity<>(new DataResponse(userService.getUsersWithPaginationAndSorting(pageable,search),HttpStatus.OK),HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

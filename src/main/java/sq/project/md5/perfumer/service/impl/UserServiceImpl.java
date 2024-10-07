@@ -53,31 +53,14 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Page<Users> getUsersWithPaginationAndSorting(Integer page, Integer pageSize, String sortBy, String orderBy, String searchName) {
-        Pageable pageable;
-
-        // Xác định cách sắp xếp
-        if (!sortBy.isEmpty()) {
-            Sort sort;
-            switch (sortBy) {
-                case "asc":
-                    sort = Sort.by(orderBy).ascending();
-                    break;
-                case "desc":
-                    sort = Sort.by(orderBy).descending();
-                    break;
-                default:
-                    sort = Sort.by(orderBy).ascending();
-            }
-            pageable = PageRequest.of(page, pageSize, sort);
-        } else {
-            pageable = PageRequest.of(page, pageSize);
-        }
-
+    public Page<Users> getUsersWithPaginationAndSorting(Pageable pageable, String search) {
         // Tìm người dùng
-        Page<Users> usersPage = userRepository.findUsersByFullNameContainsIgnoreCase(searchName, pageable);
-
-        // Kiểm tra nếu không có người dùng
+        Page<Users> usersPage ;
+        if(search.isEmpty()){
+            usersPage = userRepository.findAll(pageable);
+        }else {
+            usersPage = userRepository.findUsersByFullNameContainsIgnoreCase(search, pageable);
+        }
         if (usersPage.isEmpty()) {
             // Bạn có thể ném ra một ngoại lệ hoặc trả về một thông điệp
             throw new NoSuchElementException("Không tìm thấy người dùng");

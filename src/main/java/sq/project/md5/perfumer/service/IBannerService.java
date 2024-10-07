@@ -16,6 +16,6 @@ public interface IBannerService {
     Banner addBanner(BannerRequest bannerRequest) throws CustomException;
     Banner updateBanner(BannerRequest bannerRequest, Long id) throws CustomException;
     void deleteBanner(Long id) throws CustomException;
-    Page<Banner> getBannerWithPaginationAndSorting(Integer page, Integer pageSize, String sortBy, String orderBy, String searchName);
+    Page<Banner> getBannerWithPaginationAndSorting(Pageable pageable, String search);
 
 }

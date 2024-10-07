@@ -14,7 +14,7 @@ public interface IUserService {
     Users getUserById(Long id);
     Users getUserByUserName(String username);
     Users updateUserStatus(Long id, Boolean status) throws CustomException;
-    Page<Users> getUsersWithPaginationAndSorting(Integer page, Integer pageSize, String sortBy, String orderBy, String searchName);
+    Page<Users> getUsersWithPaginationAndSorting(Pageable pageable,String search);
     boolean changePassword(String oldPassword, String newPassword, String confirmNewPassword);
     Users getCurrentLoggedInUser();
 

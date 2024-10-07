@@ -2,6 +2,9 @@ package sq.project.md5.perfumer.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +26,12 @@ public class BrandController {
     }
 
     @PostMapping
-    public ResponseEntity<DataResponse> addBrand(@Valid @ModelAttribute BrandRequest brandRequest) throws CustomException {
+    public ResponseEntity<DataResponse> addBrand(@Valid @RequestBody BrandRequest brandRequest) throws CustomException {
         return new ResponseEntity<>(new DataResponse(brandService.addBrand(brandRequest), HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DataResponse> updateBrand(@Valid @ModelAttribute BrandRequest brandRequest, @PathVariable("id") Long id) throws CustomException {
+    public ResponseEntity<DataResponse> updateBrand(@Valid @RequestBody BrandRequest brandRequest, @PathVariable("id") Long id) throws CustomException {
         return new ResponseEntity<>(new DataResponse(brandService.updateBrand(brandRequest, id), HttpStatus.OK), HttpStatus.OK);
     }
 
@@ -39,12 +42,8 @@ public class BrandController {
     }
 
     @GetMapping
-    public ResponseEntity<DataResponse> searchByBannerName(@RequestParam(name = "searchName", defaultValue = "")String searchName,
-                                                           @RequestParam(name = "page", defaultValue = "0")Integer page,
-                                                           @RequestParam(name = "pageSize", defaultValue = "5")Integer pageSize,
-                                                           @RequestParam(name = "sortBy", defaultValue = "")String sortBy,
-                                                           @RequestParam(name = "orderBy", defaultValue = "asc")String orderBy) {
-
-        return new ResponseEntity<>(new DataResponse(brandService.getBrandWithPaginationAndSorting(page, pageSize, sortBy, orderBy, searchName), HttpStatus.OK), HttpStatus.OK);
+    public ResponseEntity<DataResponse> searchByBannerName(@PageableDefault (page = 0, size = 3, sort = "id",
+    direction = Sort.Direction.ASC) Pageable pageable,@RequestParam (value = "search",defaultValue = "")String search) {
+        return new ResponseEntity<>(new DataResponse(brandService.getBrandWithPaginationAndSorting(pageable,search), HttpStatus.OK), HttpStatus.OK);
     }
 }

@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 public class ReviewRequest {
-
+    private Long orderId;
     private String content;
 
     private Integer rate;
