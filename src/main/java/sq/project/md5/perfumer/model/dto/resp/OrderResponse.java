@@ -30,8 +30,9 @@ public class OrderResponse {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    @NotNull(message = "ID địa chỉ nhận không được để trống")
-    private Long receiveAddressId;
+    private String receiveName;
+    private String receiveAddress;
+    private String receivePhone;
 
     private String note;
 

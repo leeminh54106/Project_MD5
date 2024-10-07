@@ -64,7 +64,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(cf-> cf.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:5173/"));
+                    config.setAllowedOrigins(List.of("http://localhost:5173/","http://localhost:5174/","http://localhost:5175/"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
                     config.setAllowedMethods(List.of("*"));

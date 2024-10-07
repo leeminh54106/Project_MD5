@@ -25,4 +25,8 @@ public class Comment {
     private ProductDetail productDetail;
 
     private Boolean status;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;
 }

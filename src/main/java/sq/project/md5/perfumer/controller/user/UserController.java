@@ -1,6 +1,7 @@
 package sq.project.md5.perfumer.controller.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -71,9 +72,11 @@ public class UserController {
 
     //Danh sách sản phẩm bán chạy
     @GetMapping("/top-selling-products")
-    public ResponseEntity<DataResponse> getTopSellingProducts(@RequestParam(defaultValue = "5") Integer limit) throws CustomException {
-        List<TopSellingProductResponse> topSellingProducts = orderService.getTopSellingProducts(limit);
-        return new ResponseEntity<>(new DataResponse(topSellingProducts, HttpStatus.OK), HttpStatus.OK);
+    public ResponseEntity<DataResponse> getTopSellingProducts(
+            @RequestParam(defaultValue = "5") Integer limit,
+            @PageableDefault(page = 0, size = 5, sort = "purchaseCount", direction = Sort.Direction.DESC) Pageable pageable) throws CustomException {
+        Page<TopSellingProductResponse> topSellingProducts = orderService.getTopSellingProducts(limit, pageable);
+        return new ResponseEntity<>(new DataResponse(topSellingProducts,HttpStatus.OK), HttpStatus.OK);
     }
 
     //Danh sách sản phảm nổi bật

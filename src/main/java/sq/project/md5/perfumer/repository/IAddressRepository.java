@@ -1,5 +1,7 @@
 package sq.project.md5.perfumer.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,10 +15,10 @@ import java.util.Optional;
 
 @Repository 
 public interface IAddressRepository extends JpaRepository<Address, Long> {
-    List<Address> findByUsers(Users users);
+    Page<Address> findAllByUsers(Users users, Pageable pageable);
     Optional<Address> findByIdAndUsers(Long id, Users users);
     boolean existsByPhone(String phone);
-
+    Page<Address>findAllByUsersAndFullAddressContainsIgnoreCase(Users users, String address, Pageable pageable);
     @Query("select a from Address a where a.users = :user and a.isDefault = true")
     Optional<Address> findDefaultAddressByUser(@Param("user") Users user);
 

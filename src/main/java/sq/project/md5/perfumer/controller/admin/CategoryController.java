@@ -65,9 +65,7 @@ public class CategoryController {
 //    }
 
     @GetMapping
-    public ResponseEntity<DataResponse> searchByCategoryName(@PageableDefault(page = 0,
-            size = 3,
-            sort = "id",
+    public ResponseEntity<DataResponse> searchByCategoryName(@PageableDefault(page = 0, size = 3, sort = "id",
             direction = Sort.Direction.ASC) Pageable pageable,@RequestParam(value = "search", defaultValue = "") String search) {
         return new ResponseEntity<>(new DataResponse(categoryService.getCategoryWithPaginationAndSorting(pageable, search),HttpStatus.OK), HttpStatus.OK);
     }

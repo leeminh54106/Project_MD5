@@ -1,6 +1,7 @@
 package sq.project.md5.perfumer.repository;
 
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 @Repository
 public interface IWishListRepository extends JpaRepository<WishList, Long> {
-    List<WishList> findAllByUser(Users users);
+    Page<WishList> findAllByUser(Users users,Pageable pageable);
     Optional<WishList> findByIdAndUser(Long id, Users users);
     List<WishList> findByProduct(Product product);
 

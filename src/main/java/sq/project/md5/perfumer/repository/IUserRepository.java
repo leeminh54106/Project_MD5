@@ -15,9 +15,6 @@ public interface IUserRepository extends JpaRepository<Users, Long> {
     //lấy thông tin ngươ dùng qua userName
     Optional<Users> findByUsername(String username);
     Page<Users> findUsersByFullNameContainsIgnoreCase(String fullName, Pageable pageable);
-    //@Query("select u from Users u where u.fullName like concat('%',:fullName,'%')")
-    Page<Users> findUsersByUsernameContains(String fullName, Pageable pageable);
-
     boolean existsByEmail(String email);
     boolean existsByPhone(String phone);
     boolean existsByUsername(String username);

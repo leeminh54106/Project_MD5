@@ -74,32 +74,12 @@ public class BannerServiceImpl implements IBannerService {
     }
 
     @Override
-    public Page<Banner> getBannerWithPaginationAndSorting(Integer page, Integer pageSize, String sortBy, String orderBy, String searchName) {
-        Pageable pageable;
-        // Xác định cách sắp xếp
-        if (!sortBy.isEmpty()) {
-            Sort sort;
-            switch (sortBy) {
-                case "asc":
-                    sort = Sort.by(orderBy).ascending();
-                    break;
-                case "desc":
-                    sort = Sort.by(orderBy).descending();
-                    break;
-                default:
-                    sort = Sort.by(orderBy).ascending();
-            }
-            pageable = PageRequest.of(page, pageSize, sort);
-        } else {
-            pageable = PageRequest.of(page, pageSize);
-        }
-
-
+    public Page<Banner> getBannerWithPaginationAndSorting(Pageable pageable, String search) {
         Page<Banner> bannersPage;
-        if (searchName.isEmpty()) {
+        if (search.isEmpty()) {
             bannersPage = bannerRepository.findAll(pageable);
         } else {
-            bannersPage = bannerRepository.findAllByBannerNameContains(searchName, pageable);
+            bannersPage = bannerRepository.findAllByBannerNameContains(search, pageable);
         }
 
         if (bannersPage.isEmpty()) {
