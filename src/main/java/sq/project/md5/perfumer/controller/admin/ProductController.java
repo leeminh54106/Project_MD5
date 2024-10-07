@@ -23,7 +23,7 @@ public class ProductController {
     private final ProductServiceImpl productService;
 
     @GetMapping
-    public ResponseEntity<DataResponse> getAllProducts(@PageableDefault(page = 0,size = 5, sort = "id",direction = Sort.Direction.ASC) Pageable pageable, @RequestParam(defaultValue = "" ) String search) {
+    public ResponseEntity<DataResponse> getAllProducts(@PageableDefault(page = 0,size = 5, sort = "id",direction = Sort.Direction.DESC) Pageable pageable, @RequestParam(defaultValue = "" ) String search) {
         return new ResponseEntity<>(new DataResponse(productService.getAllProduct(pageable,search),HttpStatus.OK),HttpStatus.OK);
     }
 

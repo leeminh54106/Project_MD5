@@ -22,8 +22,16 @@ public class CategoryController {
 
 
     @GetMapping
-    public ResponseEntity<DataResponse> getAllCategories(@PageableDefault(page = 0,size = 5, sort = "id",direction = Sort.Direction.DESC) Pageable pageable, @RequestParam(defaultValue = "" ) String search) {
-        return new ResponseEntity<>(new DataResponse(categoryService.getAllCategory(pageable,search),HttpStatus.OK),HttpStatus.OK);
+    public ResponseEntity<DataResponse> getAllCategories(@PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+            , @RequestParam(defaultValue = "") String search
+            , @RequestParam(required = false) Boolean noPagination) {
+        if (Boolean.TRUE.equals(noPagination)) {
+            // true -> nopagi
+            return new ResponseEntity<>(new DataResponse(categoryService.findAllNoPagination(), HttpStatus.OK), HttpStatus.OK);
+        } else {
+            // false -> Pag
+            return new ResponseEntity<>(new DataResponse(categoryService.getAllCategory(pageable, search), HttpStatus.OK), HttpStatus.OK);
+        }
     }
 
     @GetMapping("/{id}")
@@ -44,9 +52,8 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<DataResponse> deleteCategory(@PathVariable("id") Long id) throws CustomException {
         categoryService.deleteCategory(id);
-        return new ResponseEntity<>(new DataResponse("Đã xóa thành công danh mục có mã: "+id, HttpStatus.OK), HttpStatus.OK);
+        return new ResponseEntity<>(new DataResponse("Đã xóa thành công danh mục có mã: " + id, HttpStatus.OK), HttpStatus.OK);
     }
-
 
 
 }
