@@ -44,6 +44,6 @@ public class ProductRequest {
 //    @JsonFormat(pattern = "dd/MM/yyyy")
     private Date updatedAt;
 
-    private Boolean status;
+    private Boolean status = true;
 
 }
