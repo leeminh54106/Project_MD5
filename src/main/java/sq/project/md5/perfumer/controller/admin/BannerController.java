@@ -46,7 +46,7 @@ public class BannerController {
     @GetMapping
     public ResponseEntity<DataResponse> searchByBannerName(@RequestParam(name = "searchName", defaultValue = "")String searchName,
                                                              @RequestParam(name = "page", defaultValue = "0")Integer page,
-                                                             @RequestParam(name = "pageSize", defaultValue = "2")Integer pageSize,
+                                                             @RequestParam(name = "pageSize", defaultValue = "5")Integer pageSize,
                                                              @RequestParam(name = "sortBy", defaultValue = "")String sortBy,
                                                              @RequestParam(name = "orderBy", defaultValue = "asc")String orderBy) {
 
