@@ -36,7 +36,7 @@ public class AuthController {
                     ResponseWrapper.builder()
                             .eHttpStatus(EHttpStatus.FORBIDDEN)
                             .statusCode(HttpStatus.FORBIDDEN.value())
-                            .data("Tài khoản của bạn không tồn tại! Mời bạn đăng ký tài khoản khác")
+                            .data("Tài khoản của bạn đã bị chặn hoặc không tồn tại! Mời bạn đăng ký tài khoản khác")
                             .build(),
                     HttpStatus.FORBIDDEN
             );
@@ -57,7 +57,7 @@ public class AuthController {
         return new ResponseEntity<>( ResponseWrapper.builder()
                 .eHttpStatus(EHttpStatus.SUCCESS)
                 .statusCode(HttpStatus.CREATED.value())
-                .data("Tạo tài khoản thành công")
+                .data("Đăng ký tài khoản thành công")
                 .build(),
                 HttpStatus.CREATED);
     }

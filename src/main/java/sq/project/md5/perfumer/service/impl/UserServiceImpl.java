@@ -38,7 +38,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public Users getUserByUserName(String username) {
-        return userRepository.findByUsername(username).orElseThrow(()->new NoSuchElementException("Không tồn tại người dùng"));
+        return userRepository.findByUsername(username).orElseThrow(()->new NoSuchElementException("Tên đăng nhập hoặc mật khẩu không chính xác"));
     }
 
     @Override
@@ -99,8 +99,8 @@ public class UserServiceImpl implements IUserService {
             throw new NoSuchElementException("Mật khẩu mới không được để trống !");
         }
 
-        if (newPassword.length() < 4) {
-            throw new NoSuchElementException("Mật khẩu mới phải có ít nhất 4 ký tự !");
+        if (newPassword.length() < 6) {
+            throw new NoSuchElementException("Mật khẩu mới phải có ít nhất 6 ký tự !");
         }
 
         if (confirmNewPassword.trim().isEmpty()) {

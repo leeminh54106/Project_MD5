@@ -62,7 +62,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(cf-> cf.configurationSource(request -> {
+
+        http.cors(cf -> cf.configurationSource(request ->
+                {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOrigins(List.of("http://localhost:5173/","http://localhost:5174/","http://localhost:5175/"));
                     config.setAllowedHeaders(List.of("*"));
@@ -71,8 +73,7 @@ public class SecurityConfig {
                     config.setExposedHeaders(List.of("*"));
                     return config;
                 }))
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//Không cho phép lữu trữ phiên làm việc
+                .csrf(csrf -> csrf.disable()).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//Không cho phép lữu trữ phiên làm việc
                 .authorizeHttpRequests(auth ->
 //                        auth.requestMatchers("/admin/**").hasRole("ADMIN"))
                                 auth.requestMatchers("/api.example.com/v1/admin/**").hasAuthority("ROLE_ADMIN")
