@@ -2,6 +2,10 @@ package sq.project.md5.perfumer.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,18 +29,18 @@ public class OrderController {
     private final IOrderService orderService;
 
     @PostMapping("/cart/checkout")
-    public ResponseEntity<DataResponse> orderNow(@Valid @RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<DataResponse> orderNow(@Valid @RequestBody OrderRequest orderRequest)  {
         orderService.orderNow(orderRequest);
         return new ResponseEntity<>(new DataResponse("Bạn đã đặt hàng thành công", HttpStatus.OK), HttpStatus.OK);
     }
 
     //Lấy ra danh sách lịch sử mua hàng theo trạng thái đơn hàng
     @GetMapping("/order/historyStatus/{orderStatus}")
-    public ResponseEntity<DataResponse> getOrderHistoryByStatus(@PathVariable OrderStatus orderStatus) {
-        List<Order> order = orderService.getOrdersByStatus(orderStatus);
-        List<OrderResponse> listOrderResponse = order.stream().map(OrderConverterResponse::changeOrderResponse)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(new DataResponse(listOrderResponse, HttpStatus.OK), HttpStatus.OK);
+    public ResponseEntity<DataResponse> getOrderHistoryByStatus(
+            @PathVariable OrderStatus orderStatus,
+            @PageableDefault(page = 0, size = 3, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<Order> ordersPage = orderService.getOrdersByStatus(orderStatus, pageable);
+        return new ResponseEntity<>(new DataResponse(ordersPage, HttpStatus.OK), HttpStatus.OK);
     }
 
     //Hủy đơn hàng đang chờ xác nhận
@@ -59,10 +63,24 @@ public class OrderController {
     }
 
     //Lấy ra danh sách lịch sử mua hàng
+//    @GetMapping("/order/history")
+//    public ResponseEntity<DataResponse> getAllOrderHistory() {
+//        List<Order> orders = orderService.getAllUserOrders();
+//        List<OrderResponse> list = orders.stream().map(OrderConverterResponse::changeOrderResponse).collect(Collectors.toList());
+//        return new ResponseEntity<>(new DataResponse(list, HttpStatus.OK), HttpStatus.OK);
+//    }
+
+    //Lấy ra danh sách lịch sử mua hàng
     @GetMapping("/order/history")
-    public ResponseEntity<DataResponse> getAllOrderHistory() {
-        List<Order> orders = orderService.getAllUserOrders();
-        List<OrderResponse> list = orders.stream().map(OrderConverterResponse::changeOrderResponse).collect(Collectors.toList());
-        return new ResponseEntity<>(new DataResponse(list, HttpStatus.OK), HttpStatus.OK);
+    public ResponseEntity<DataResponse> getAllOrderHistory(
+            @PageableDefault(page = 0, size = 3, sort = "id",  direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(value = "search", defaultValue = "") String search) {
+
+        Page<Order> orders = orderService.getUserOrdersWithPaginationAndSearch(pageable, search);
+//        List<OrderResponse> list = orders.getContent().stream()
+//                .map(OrderConverterResponse::changeOrderResponse)
+//                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(new DataResponse(orders, HttpStatus.OK), HttpStatus.OK);
     }
 }

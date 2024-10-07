@@ -1,12 +1,10 @@
 package sq.project.md5.perfumer.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
 
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @Table(name = "products")
@@ -22,8 +20,7 @@ public class Product {
     private Long id;
 
     @Column( nullable = false, unique = true, length = 100)
-    @Builder.Default
-    private String sku= UUID.randomUUID().toString();
+    private String sku;
 
     @Column( nullable = false, unique = true, length = 100)
     private String productName;
@@ -38,14 +35,6 @@ public class Product {
     @Column( length = 255)
     private String image;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-    @ManyToOne
-    @JoinColumn(name = "brand_id")
-    private Brand brand;
-
 //    @JsonFormat(pattern = "dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
     private Date createdAt;
@@ -55,4 +44,12 @@ public class Product {
     private Date updatedAt;
 
     private Boolean status;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 }

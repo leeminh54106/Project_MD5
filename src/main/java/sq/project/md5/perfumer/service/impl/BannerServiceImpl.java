@@ -10,11 +10,7 @@ import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.BannerRequest;
 import sq.project.md5.perfumer.model.entity.Banner;
-import sq.project.md5.perfumer.model.entity.Category;
-import sq.project.md5.perfumer.model.entity.Product;
-import sq.project.md5.perfumer.model.entity.WishList;
 import sq.project.md5.perfumer.repository.IBannerRepository;
-import sq.project.md5.perfumer.repository.ICategoryRepository;
 import sq.project.md5.perfumer.service.IBannerService;
 
 import java.util.List;
@@ -73,36 +69,17 @@ public class BannerServiceImpl implements IBannerService {
 
     @Override
     public void deleteBanner(Long id){
+        bannerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại banner: " + id));
         bannerRepository.deleteById(id);
     }
 
     @Override
-    public Page<Banner> getBannerWithPaginationAndSorting(Integer page, Integer pageSize, String sortBy, String orderBy, String searchName) {
-        Pageable pageable;
-        // Xác định cách sắp xếp
-        if (!sortBy.isEmpty()) {
-            Sort sort;
-            switch (sortBy) {
-                case "asc":
-                    sort = Sort.by(orderBy).ascending();
-                    break;
-                case "desc":
-                    sort = Sort.by(orderBy).descending();
-                    break;
-                default:
-                    sort = Sort.by(orderBy).ascending();
-            }
-            pageable = PageRequest.of(page, pageSize, sort);
-        } else {
-            pageable = PageRequest.of(page, pageSize);
-        }
-
-
+    public Page<Banner> getBannerWithPaginationAndSorting(Pageable pageable, String search) {
         Page<Banner> bannersPage;
-        if (searchName.isEmpty()) {
+        if (search.isEmpty()) {
             bannersPage = bannerRepository.findAll(pageable);
         } else {
-            bannersPage = bannerRepository.findAllByBannerNameContains(searchName, pageable);
+            bannersPage = bannerRepository.findAllByBannerNameContains(search, pageable);
         }
 
         if (bannersPage.isEmpty()) {

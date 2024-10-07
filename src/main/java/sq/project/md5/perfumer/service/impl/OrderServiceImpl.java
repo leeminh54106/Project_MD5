@@ -1,7 +1,8 @@
 package sq.project.md5.perfumer.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,7 @@ public class OrderServiceImpl implements IOrderService {
     private final IAddressService addressService;
 
     private final IAddressRepository addressRepository;
-
+    private final ICouponRepository couponRepository;
 
 
     @Override
@@ -49,100 +50,148 @@ public class OrderServiceImpl implements IOrderService {
         Users user = userService.getCurrentLoggedInUser();
 
         List<ShoppingCart> shoppingCartsItems = cartRepository.findAllByUsers(user);
-        if(shoppingCartsItems.isEmpty()) {
+        if (shoppingCartsItems.isEmpty()) {
             throw new NoSuchElementException("Giỏ hàng trống, không có sản phẩm nào để đặt hàng");
         }
-
-        // Tìm địa chỉ theo ID
-//        Address address = addressService.findByIdAndUser(id, user);
-//        if (address == null) {
-//            throw new NoSuchElementException("Không tìm thấy địa chỉ cho người dùng. Vui lòng thêm địa chỉ trước khi đặt hàng.");
-//        }
-
-        Address address = addressService.getDefaultAddressForUser(user);
-
-        if (address == null) {
-            throw new NoSuchElementException("Không tìm thấy địa chỉ cho người dùng. Vui lòng thêm địa chỉ trước khi đặt hàng.");
+        if (
+                orderRequest.getAddressId() == null
+                        && orderRequest.getReceiveFullAddress() == null
+                        && orderRequest.getReceiveName() == null
+                        && orderRequest.getReceivePhone() == null
+        )
+        {
+            throw new NoSuchElementException("Vui lòng nhập đầy đủ thông tin");
         }
+
+        Address address = null;
+        if (orderRequest.getAddressId() != null) {
+            address = addressRepository.findById(orderRequest.getAddressId()).orElseThrow(() -> new NoSuchElementException("Không tìm thấy địa chỉ cho người dùng. Vui lòng thêm địa chỉ trước khi đặt hàng."));
+        }
+       if(address!= null && address.getUsers().getId() != user.getId()) {
+            throw new NoSuchElementException("Địa chỉ không phải của bạn! vui lòng nhập lại");
+        }
+        Coupon coupon = null;
+
+        if (orderRequest.getCouponId() != null) {
+            coupon = couponRepository.findById(orderRequest.getCouponId()).orElseThrow(() -> new NoSuchElementException("Không tìm thấy phiếu giảm giá . Vui lòng nhập lại mã"));
+            if (coupon.getStock() <= 0) {
+                throw new NoSuchElementException("Coupon đã hết, vui lòng sử dụng coupon khác");
+            }
+            Date currentDate = new Date();
+            if (coupon.getStardate() != null && currentDate.before(coupon.getStardate())) {
+                throw new NoSuchElementException("Coupon chưa đến ngày sử dụng");
+            }
+            if (coupon.getEnddate() != null && currentDate.after(coupon.getEnddate())) {
+                throw new NoSuchElementException("Coupon đã hết hạn");
+            }
+        }
+
+        double total = shoppingCartsItems.stream()
+                .map(item -> item.getOrderQuantity() * item.getProductDetail().getUnitPrice())
+                .reduce(0.0, Double::sum);
+
+        String receiveName, receiveFullAddress, receivePhone;
+
+        if (orderRequest.getAddressId() != null) {
+            receiveName = address.getReceiveName();
+            receiveFullAddress = address.getFullAddress();
+            receivePhone = address.getPhone();
+        } else {
+            if (orderRequest.getReceiveName() == null || orderRequest.getReceiveName().isEmpty()) {
+                throw new NoSuchElementException("Tên người nhận không được để trống");
+            }
+            receiveName = orderRequest.getReceiveName();
+
+            if (orderRequest.getReceiveFullAddress() == null || orderRequest.getReceiveFullAddress().isEmpty()) {
+                throw new NoSuchElementException("Địa chỉ nhận không được để trống");
+            }
+            receiveFullAddress = orderRequest.getReceiveFullAddress();
+
+            if (orderRequest.getReceivePhone() == null || orderRequest.getReceivePhone().isEmpty()) {
+                throw new NoSuchElementException("Số điện thoại không được để trống");
+            }
+            receivePhone = orderRequest.getReceivePhone();
+        }
+
         Order order = Order.builder()
                 .users(user)
                 .serialNumber(UUID.randomUUID().toString())
-                .totalPrice(calculateTotalPrice(shoppingCartsItems))
+                .totalPrice(coupon != null ? (total - (total * coupon.getPercent() / 100)) : total)
                 .status(OrderStatus.WAITING)
-                .receiveAddress(address.getFullAddress())
-                .receivePhone(address.getPhone())
-                .receiveName(address.getReceiveName())
+//                .receiveName(orderRequest.getAddressId() != null ? address.getReceiveName() : orderRequest.getReceiveName())
+//                .receiveFullAddress(orderRequest.getAddressId() != null ? address.getFullAddress() : orderRequest.getReceiveFullAddress())
+//                .receivePhone(orderRequest.getAddressId() != null ? address.getPhone() : orderRequest.getReceivePhone())
+                .receiveName(receiveName)
+                .receiveFullAddress(receiveFullAddress)
+                .receivePhone(receivePhone)
                 .note(orderRequest.getNote())
+                .coupon(coupon)
                 .createdAt(new Date())
-                .receivedAt(addDays(new Date(), 4))
+                .receivedAt(new Date(new Date().getTime() + 4 * 24 * 60 * 60 * 1000))
                 .build();
         order = orderRepository.save(order);
 
-        //Luu danh sách chi tiết đơn hàng
-        Order findOder = order;
-        List<OrderDetails> list = shoppingCartsItems.stream().map(
-                item->{
-                    ProductDetail productDetail = item.getProductDetail();
-        if(item.getOrderQuantity() > productDetail.getStockQuantity()) {
-            throw new NoSuchElementException("Số lượng đặt hàng vượt quá số lượng sản phẩm");
+        List<OrderDetails> list = new ArrayList<>();
+        for (ShoppingCart shoppingCart : shoppingCartsItems) {
+            ProductDetail productDetail = shoppingCart.getProductDetail();
+            if (productDetail.getStockQuantity() < shoppingCart.getOrderQuantity()) {
+                throw new NoSuchElementException("Số lượng đặt hàng vượt quá số lượng sản phẩm");
+            }
+            OrderDetails orderDetails = new OrderDetails();
+            orderDetails.setOrder(order);
+            orderDetails.setProductDetail(shoppingCart.getProductDetail());
+            orderDetails.setName(shoppingCart.getProductDetail().getProduct().getProductName());
+            orderDetails.setUnitPrice(shoppingCart.getProductDetail().getUnitPrice());
+            orderDetails.setOrderQuantity(shoppingCart.getOrderQuantity());
+            list.add(orderDetails);
+
+            productDetail.setStockQuantity(productDetail.getStockQuantity() - shoppingCart.getOrderQuantity());
+            productDetailRepository.save(productDetail);
         }
-        productDetail.setStockQuantity(productDetail.getStockQuantity() - item.getOrderQuantity());
-        productDetailRepository.save(productDetail);
-                    return OrderDetails.builder()
-                            .productDetail(productDetail)
-                            .name(productDetail.getProduct().getProductName())
-                            .unitPrice(productDetail.getUnitPrice())
-                            .orderQuantity(item.getOrderQuantity())
-                            .build();
-                }).collect(Collectors.toList());
         List<OrderDetails> orderDetails = orderDetailRepository.saveAll(list);
         order.setOrderDetails(orderDetails);
         cartRepository.deleteAll(shoppingCartsItems);
+        if(coupon != null) {
+            coupon.setStock(coupon.getStock() - 1);
+            couponRepository.save(coupon);
+        }
         return order;
     }
 
-    private Double calculateTotalPrice(List<ShoppingCart> shoppingCartItems) {
-        return shoppingCartItems.stream().mapToDouble(item-> {
-                    ProductDetail productDetail = item.getProductDetail();
-                    return productDetail.getUnitPrice() * item.getOrderQuantity();
-                })
-                .sum();
-    }
-
-    private Date addDays(Date date, Integer days) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.DAY_OF_MONTH, days);
-        return calendar.getTime();
-    }
-
     @Override
-    public List<Order> getAllOrders() {
-        List<Order> orders = orderRepository.findAll();
-        if(orders.isEmpty()) {
-            throw new SuccessException("Không có sản phẩm nào trong đơn hàng");
+    public Page<Order> getAllOrders(Pageable pageable, String search) {
+        Page<Order> orderPage;
+        if(search.isEmpty()){
+            orderPage = orderRepository.findAll(pageable);
+        }else {
+            orderPage = orderRepository.findAllByUsersUsernameContainsIgnoreCase(search,pageable);
         }
 
-        return orders;
+        if (orderPage.isEmpty()) {
+            throw new SuccessException("Không tìm thấy tên người dùng");
+        }
+
+        return orderPage;
     }
 
     @Override
-    public List<OrderResponse> getOrderResponsesByStatus(OrderStatus status) {
-        List<Order> orders = orderRepository.findByStatus(status);
+    public Page<OrderResponse> getOrderResponsesByStatus(OrderStatus status, Pageable pageable) {
+        Page<Order> ordersPage = orderRepository.findByStatus(status, pageable);
 
-        if(orders.isEmpty()) {
+        if (ordersPage.isEmpty()) {
             throw new NoSuchElementException("Không có đơn hàng nào trong trạng thái: " + status);
         }
 
-        return orders.stream().map(order -> OrderResponse.builder()
+        // Chuyển đổi từ Page<Order> sang Page<OrderResponse>
+        return ordersPage.map(order -> OrderResponse.builder()
                 .id(order.getId())
                 .username(order.getUsers().getUsername())
                 .userId(order.getUsers().getId())
                 .serialNumber(order.getSerialNumber())
                 .totalPrice(order.getTotalPrice())
-                .receiveAddress(order.getReceiveAddress())
-                .receivePhone(order.getReceivePhone())
                 .receiveName(order.getReceiveName())
+                .receivePhone(order.getReceivePhone())
+                .receiveAddress(order.getReceiveFullAddress())
                 .note(order.getNote())
                 .status(order.getStatus())
                 .createdAt(order.getCreatedAt())
@@ -155,12 +204,12 @@ public class OrderServiceImpl implements IOrderService {
                                         .quantity(detail.getOrderQuantity())
                                         .build())
                         .collect(Collectors.toList()))
-                .build()).collect(Collectors.toList());
+                .build());
     }
 
     @Override
     public OrderResponse getOrderById(Long id) {
-        Order order =  orderRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại đơn hàng"));
+        Order order = orderRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại đơn hàng"));
 
         return OrderResponse.builder()
                 .id(order.getId())
@@ -168,9 +217,9 @@ public class OrderServiceImpl implements IOrderService {
                 .userId(order.getUsers().getId())
                 .serialNumber(order.getSerialNumber())
                 .totalPrice(order.getTotalPrice())
-                .receiveAddress(order.getReceiveAddress())
-                .receivePhone(order.getReceivePhone())
                 .receiveName(order.getReceiveName())
+                .receivePhone(order.getReceivePhone())
+                .receiveAddress(order.getReceiveFullAddress())
                 .note(order.getNote())
                 .status(order.getStatus())
                 .createdAt(order.getCreatedAt())
@@ -193,15 +242,15 @@ public class OrderServiceImpl implements IOrderService {
 
         OrderStatus currentStatus = order.getStatus();
 
-        if(order.getStatus() == OrderStatus.CANCEL) {
+        if (order.getStatus() == OrderStatus.CANCEL) {
             throw new CustomException("Không thể thay đổi trạng thái đơn hàng vì người dùng đã hủy đơn hàng", HttpStatus.BAD_REQUEST);
         }
 
-        if(order.getStatus() == OrderStatus.SUCCESS) {
+        if (order.getStatus() == OrderStatus.SUCCESS) {
             throw new CustomException("Đơn hàng đã giao thành công nên khôn thể thay đổi trạng thái", HttpStatus.BAD_REQUEST);
         }
 
-        if(!canChaneStatus(currentStatus, status)){
+        if (!canChaneStatus(currentStatus, status)) {
             throw new CustomException("Không thể thay dổi trang thái của đơn hàng trước đó", HttpStatus.BAD_REQUEST);
         }
         order.setStatus(status);
@@ -215,26 +264,26 @@ public class OrderServiceImpl implements IOrderService {
 
 
     @Override
-    public List<Order> getAllUserOrders() {
-        Users user = userService.getCurrentLoggedInUser();
-        List<Order> orders = orderRepository.findAllByUsers(user);
-        if (orders.isEmpty()) {
-            throw new IllegalArgumentException("Không có đơn hàng nào cho người dùng này.");
-        }
-        return orders;
+    public void getAllUserOrders() {
+//        Users user = userService.getCurrentLoggedInUser();
+//        List<Order> orders = orderRepository.findAllByUsers(user);
+//        if (orders.isEmpty()) {
+//            throw new IllegalArgumentException("Không có đơn hàng nào cho người dùng này.");
+//        }
+        return ;
     }
 
     @Override
     public Order getOrderBySerialNumber(String serialNumber) {
         Users user = userService.getCurrentLoggedInUser();
         return orderRepository.findBySerialNumberAndUsers(serialNumber, user)
-                .orElseThrow(() ->new NoSuchElementException("Không tồn tại đơn hàng với mã này"));
+                .orElseThrow(() -> new NoSuchElementException("Không tồn tại đơn hàng với mã này"));
     }
 
     @Override
-    public List<Order> getOrdersByStatus(OrderStatus orderStatus) {
+    public Page<Order> getOrdersByStatus(OrderStatus orderStatus, Pageable pageable) {
         Users user = userService.getCurrentLoggedInUser();
-        List<Order> orders = orderRepository.findByStatusAndUsers(orderStatus, user);
+        Page<Order> orders = orderRepository.findByStatusAndUsers(orderStatus, user, pageable);
         if (orders.isEmpty()) {
             throw new NoSuchElementException("Không tìm thấy đơn hàng nào với trạng thái: " + orderStatus);
         }
@@ -272,28 +321,55 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public List<TopSellingProductResponse> getTopSellingProducts(Integer limit) throws CustomException {
-        Pageable pageable = PageRequest.of(0, limit);
-        List<Object[]> results = orderDetailRepository.findTopSellingProducts(pageable);
+    public Page<TopSellingProductResponse> getTopSellingProducts(Integer limit, Pageable pageable) throws CustomException {
+        // Giới hạn số lượng sản phẩm bán chạy tối đa
+        if (limit < 1) {
+            throw new CustomException("Limit phải lớn hơn 0", HttpStatus.BAD_REQUEST);
+        }
+
+        // Lấy kết quả từ repository
+        Page<Object[]> results = orderDetailRepository.findTopSellingProducts(pageable);
 
         if (results.isEmpty()) {
             throw new CustomException("Không có sản phẩm bán chạy nào", HttpStatus.BAD_REQUEST);
         }
 
-        List<TopSellingProductResponse> topSellingProducts = new ArrayList<>();
-        for (Object[] result : results) {
+        List<TopSellingProductResponse> topSellingProducts = results.stream().map(result -> {
             Product product = (Product) result[0];
             Long purchaseCount = (Long) result[1];
 
             TopSellingProductResponse response = new TopSellingProductResponse();
             response.setProduct(product);
             response.setPurchaseCount(purchaseCount);
+            return response;
+        }).collect(Collectors.toList());
 
-            topSellingProducts.add(response);
-        }
-        return topSellingProducts;
+        // Trả về Page
+        return new PageImpl<>(topSellingProducts, pageable, results.getTotalElements());
     }
 
+    @Override
+    public Page<Order> getUserOrdersWithPaginationAndSearch(Pageable pageable, String search) {
+        Users user = userService.getCurrentLoggedInUser();
+        Page<Order> orders;
 
-}
+        if (search == null || search.trim().isEmpty()) {
+            orders = orderRepository.findAllByUsers(user, pageable);
+        } else {
+            // Chuyển đổi search sang OrderStatus
+            OrderStatus status;
+            try {
+                status = OrderStatus.valueOf(search.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new NoSuchElementException("Trạng thái không hợp lệ.");
+            }
+
+            orders = orderRepository.findAllByUsersAndStatus(user, status, pageable);
+        }
+
+        if (orders.isEmpty()) {
+            throw new NoSuchElementException("Không có đơn hàng nào cho người dùng này.");
+        }
+        return orders;
+}}
 

@@ -42,8 +42,7 @@ public class Order {
     @Column( length = 100)
     private String receiveName;
 
-    @Column( length = 254)
-    private String receiveAddress;
+    private String receiveFullAddress;
 
     @Column( length = 15)
     private String receivePhone;
@@ -67,7 +66,7 @@ public class Order {
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "review_id")
     private Review review;
 }

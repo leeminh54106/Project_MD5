@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @Table(name = "coupon")
@@ -20,11 +19,10 @@ public class Coupon {
     private Long id;
 
     @Column( nullable = false, unique = true, length = 100)
-    @Builder.Default
-    private String code = UUID.randomUUID().toString();;
+    private String code;
 
-    @Column( columnDefinition = "TEXT")
-    private String percent;
+    @Column( nullable = false, columnDefinition = "Decimal(10,2)")
+    private Double percent;
 
     @Column( nullable = false, columnDefinition = "Decimal(10,2)")
     private Double stock;

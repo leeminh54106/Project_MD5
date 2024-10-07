@@ -2,6 +2,7 @@ package sq.project.md5.perfumer.model.dto.resp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sq.project.md5.perfumer.constants.OrderStatus;
 
@@ -30,9 +31,7 @@ public class OrderResponse {
     private OrderStatus status;
 
     private String receiveName;
-
     private String receiveAddress;
-
     private String receivePhone;
 
     private String note;

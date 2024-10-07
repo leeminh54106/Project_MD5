@@ -2,15 +2,12 @@ package sq.project.md5.perfumer.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.CategoryRequest;
 import sq.project.md5.perfumer.model.entity.Category;
-import sq.project.md5.perfumer.model.entity.Product;
 import sq.project.md5.perfumer.repository.ICategoryRepository;
 import sq.project.md5.perfumer.repository.IProductRepository;
 import sq.project.md5.perfumer.service.ICategoryService;
@@ -109,44 +106,41 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
-    public Page<Category> getCategoryWithPaginationAndSorting(Integer page, Integer pageSize, String sortBy, String orderBy, String searchName) {
-        Pageable pageable;
-        // Xác định cách sắp xếp
-        if (!sortBy.isEmpty()) {
-            Sort sort;
-            switch (sortBy) {
-                case "asc":
-                    sort = Sort.by(orderBy).ascending();
-                    break;
-                case "desc":
-                    sort = Sort.by(orderBy).descending();
-                    break;
-                default:
-                    sort = Sort.by(orderBy).ascending();
-            }
-            pageable = PageRequest.of(page, pageSize, sort);
-        } else {
-            pageable = PageRequest.of(page, pageSize);
+    public Page<Category> getCategoryWithPaginationAndSorting(Pageable pageable, String search)  {
+        Page<Category> categories;
+        if(search.isEmpty()){
+            categories = categoryRepository.findAll(pageable);
+        }else {
+            categories = categoryRepository.findAllByCategoryNameContains(search,pageable);
         }
+        return categories;
 
-        // Tìm danh mục
-        Page<Category> categoriesPage;
-        if (searchName.isEmpty()) {
-            categoriesPage = categoryRepository.findAll(pageable);
-        } else {
-            categoriesPage = categoryRepository.findAllByCategoryNameContains(searchName, pageable);
-        }
 
-        // Kiểm tra nếu không có danh mục
-        if (categoriesPage.isEmpty()) {
-            throw new NoSuchElementException("Không tìm thấy danh mục");
-        }
-
-        return categoriesPage;
     }
+//    // Tìm danh mục
+//    Page<Category> categoriesPage;
+//        if (searchName.isEmpty()) {
+//        categoriesPage = categoryRepository.findAll(pageable);
+//    } else {
+//        categoriesPage = categoryRepository.findAllByCategoryNameContains(searchName, pageable);
+//    }
+//
+//    // Kiểm tra nếu không có danh mục
+//        if (categoriesPage.isEmpty()) {
+//        throw new NoSuchElementException("Không tìm thấy danh mục");
+//    }
+//
+//        return categoriesPage;
 
     @Override
     public Page<Category> listCategoriesForSale(Pageable pageable) {
         return categoryRepository.findCategoriesByStatusTrue(pageable);
+    }
+
+    @Override
+    public void changeStatusCategory(Long categoryId) throws CustomException {
+       Category existingCategory =  categoryRepository.findById(categoryId).orElseThrow(() -> new NoSuchElementException("Không tồn tại danh mục : " + categoryId));
+        existingCategory.setStatus(!existingCategory.getStatus());
+        categoryRepository.save(existingCategory);
     }
 }

@@ -1,10 +1,12 @@
 package sq.project.md5.perfumer.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sq.project.md5.perfumer.advice.SuccessException;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.WishListRequest;
@@ -23,7 +25,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-
 public class WishListServiceImpl implements IWishListService {
 
     private final IUserService userService;
@@ -39,7 +40,9 @@ public class WishListServiceImpl implements IWishListService {
                 .orElseThrow(() -> new NoSuchElementException("Sản phẩm này không tồn tại"));
 
         if (wishListRepository.existsByUserAndProduct(user, product)) {
-            throw new CustomException("Sản phẩm này đã có trong danh sách yêu thích của bạn", HttpStatus.BAD_REQUEST);
+            wishListRepository.deleteByUserIdAndProductId(user.getId(),product.getId());
+//            return null;
+            throw new SuccessException("Đã xóa thành công sản phẩm yêu thích");
         }
 
         WishList wishList = WishList.builder()
@@ -59,19 +62,19 @@ public class WishListServiceImpl implements IWishListService {
     }
 
     @Override
-    public List<WishListResponse> getAllWishList() throws CustomException {
+    public Page<WishListResponse> getAllWishList(Pageable pageable) throws CustomException {
         Users user = userService.getCurrentLoggedInUser();
-        List<WishList> wishList = wishListRepository.findAllByUser(user);
+        Page<WishList> wishList = wishListRepository.findAllByUser(user,pageable);
         if (wishList.isEmpty()) {
             throw new CustomException("Không có sản phẩm nào trong danh sách yêu thích", HttpStatus.BAD_REQUEST);
         }
-        List<WishListResponse> responseList = wishList.stream()
+        Page<WishListResponse> responseList = wishList
                 .map(wish -> { WishListResponse response = new WishListResponse();
                     response.setId(wish.getId());
                     response.setProductId(wish.getProduct().getId());
                     response.setWishlistProName(wish.getProduct().getProductName());
                     response.setUserId(user.getId());
-                    return response;}).collect(Collectors.toList());
+                    return response;});
         return responseList;
     }
 

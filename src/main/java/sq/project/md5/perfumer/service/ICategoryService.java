@@ -18,6 +18,7 @@ public interface ICategoryService {
     Category addCategory(CategoryRequest category) throws CustomException;
     Category updateCategory(CategoryRequest category, Long id) throws CustomException;
     void deleteCategory(Long id) throws CustomException;
-    Page<Category> getCategoryWithPaginationAndSorting(Integer page, Integer pageSize, String sortBy, String orderBy, String searchName);
+    Page<Category> getCategoryWithPaginationAndSorting(Pageable pageable,String search);
     Page<Category> listCategoriesForSale(Pageable pageable);
+    void changeStatusCategory(Long categoryId) throws CustomException;
 }

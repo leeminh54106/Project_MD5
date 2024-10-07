@@ -17,4 +17,5 @@ public interface ICategoryRepository extends JpaRepository<Category, Long> {
     boolean existsByCategoryName(String categoryName);
     boolean existsById(Long id);
     Page<Category> findCategoriesByStatusTrue(Pageable pageable);
+//    Page<Category> findAllByCategoryNameContains(String name, Pageable pageable);
 }

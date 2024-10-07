@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @Builder
 public class AddToCartRequest {
-    private Long productId;
+    private Long productDetailId;
     private Integer quantity;
 
 }

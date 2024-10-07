@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.BrandRequest;
 import sq.project.md5.perfumer.model.entity.Brand;
+import sq.project.md5.perfumer.model.entity.Product;
 import sq.project.md5.perfumer.repository.IBrandRepository;
 import sq.project.md5.perfumer.service.IBrandService;
 
@@ -44,7 +45,7 @@ public class BrandServiceImpl implements IBrandService {
         Brand brand = Brand.builder()
                 .brandName(brandRequest.getBrandName())
                 .description(brandRequest.getDescription())
-
+                .status(brandRequest.getStatus())
                 .build();
         return brandRepository.save(brand);
     }
@@ -69,36 +70,17 @@ public class BrandServiceImpl implements IBrandService {
 
     @Override
     public void deleteBrand(Long id) throws CustomException {
+        brandRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại thương hiệu: " + id));
     brandRepository.deleteById(id);
     }
 
     @Override
-    public Page<Brand> getBrandWithPaginationAndSorting(Integer page, Integer pageSize, String sortBy, String orderBy, String searchName) {
-        Pageable pageable;
-        // Xác định cách sắp xếp
-        if (!sortBy.isEmpty()) {
-            Sort sort;
-            switch (sortBy) {
-                case "asc":
-                    sort = Sort.by(orderBy).ascending();
-                    break;
-                case "desc":
-                    sort = Sort.by(orderBy).descending();
-                    break;
-                default:
-                    sort = Sort.by(orderBy).ascending();
-            }
-            pageable = PageRequest.of(page, pageSize, sort);
-        } else {
-            pageable = PageRequest.of(page, pageSize);
-        }
-
-
+    public Page<Brand> getBrandWithPaginationAndSorting(Pageable pageable,String search) {
         Page<Brand> brandsPage;
-        if (searchName.isEmpty()) {
+        if (search.isEmpty()) {
             brandsPage = brandRepository.findAll(pageable);
         } else {
-            brandsPage = brandRepository.findAllByBrandNameContains(searchName, pageable);
+            brandsPage = brandRepository.findAllByBrandNameContains(search, pageable);
         }
 
         if (brandsPage.isEmpty()) {

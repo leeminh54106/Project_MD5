@@ -1,6 +1,10 @@
 package sq.project.md5.perfumer.controller.admin;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +26,9 @@ public class OrderAdminController {
     private final OrderServiceImpl orderService;
 
     @GetMapping
-    public ResponseEntity<DataResponse> getAllOrders() {
-        List<Order> orders = orderService.getAllOrders();
-        return new ResponseEntity<>(new DataResponse(orders, HttpStatus.OK), HttpStatus.OK);
+    public ResponseEntity<DataResponse> getAllOrders(@PageableDefault(page = 0,size = 3, sort = "id",
+    direction = Sort.Direction.ASC) Pageable pageable,@RequestParam(value = "search",defaultValue = "")String search) {
+        return new ResponseEntity<>(new DataResponse(orderService.getAllOrders(pageable,search), HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/orderById/{id}")
@@ -34,8 +38,9 @@ public class OrderAdminController {
     }
 
     @GetMapping("orderStatus/{status}")
-    public ResponseEntity<DataResponse> getOrderByStatus(@PathVariable OrderStatus status){
-        List<OrderResponse> orderResponses = orderService.getOrderResponsesByStatus(status);
+    public ResponseEntity<DataResponse> getOrderByStatus(@PathVariable OrderStatus status,
+                                                         @PageableDefault(page = 0, size = 3, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<OrderResponse> orderResponses = orderService.getOrderResponsesByStatus(status, pageable);
         return new ResponseEntity<>(new DataResponse(orderResponses, HttpStatus.OK), HttpStatus.OK);
     }
 

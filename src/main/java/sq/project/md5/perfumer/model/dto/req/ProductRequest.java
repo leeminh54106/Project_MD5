@@ -35,6 +35,7 @@ public class ProductRequest {
 
     private Long categoryId;
 
+    @NotNull(message = "Tên thương hiệu không được để trống")
     private Long brandId;
 
     //    @JsonFormat(pattern = "dd/MM/yyyy")
