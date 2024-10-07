@@ -1,6 +1,7 @@
 package sq.project.md5.perfumer.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -61,19 +62,19 @@ public class WishListServiceImpl implements IWishListService {
     }
 
     @Override
-    public List<WishListResponse> getAllWishList() throws CustomException {
+    public Page<WishListResponse> getAllWishList(Pageable pageable) throws CustomException {
         Users user = userService.getCurrentLoggedInUser();
-        List<WishList> wishList = wishListRepository.findAllByUser(user);
+        Page<WishList> wishList = wishListRepository.findAllByUser(user,pageable);
         if (wishList.isEmpty()) {
             throw new CustomException("Không có sản phẩm nào trong danh sách yêu thích", HttpStatus.BAD_REQUEST);
         }
-        List<WishListResponse> responseList = wishList.stream()
+        Page<WishListResponse> responseList = wishList
                 .map(wish -> { WishListResponse response = new WishListResponse();
                     response.setId(wish.getId());
                     response.setProductId(wish.getProduct().getId());
                     response.setWishlistProName(wish.getProduct().getProductName());
                     response.setUserId(user.getId());
-                    return response;}).collect(Collectors.toList());
+                    return response;});
         return responseList;
     }
 

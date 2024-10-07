@@ -39,14 +39,13 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status;
 
-//    @Column( length = 100)
-//    private String receiveName;
+    @Column( length = 100)
+    private String receiveName;
 
+    private String receiveFullAddress;
 
-    private Long receiveAddressId;
-
-//    @Column( length = 15)
-//    private String receivePhone;
+    @Column( length = 15)
+    private String receivePhone;
 
     @Column( length = 100)
     private String note;
@@ -67,7 +66,7 @@ public class Order {
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "review_id")
     private Review review;
 }

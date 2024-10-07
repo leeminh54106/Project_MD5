@@ -1,6 +1,8 @@
 package sq.project.md5.perfumer.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.advice.SuccessException;
@@ -46,25 +48,35 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public List<AddressResponse> getUserAddresses() throws CustomException {
+    public Page<Address> getUserAddresses(Pageable pageable, String search)  {
         Users user = userService.getCurrentLoggedInUser();
-
-        List<Address> addresses = addressRepository.findByUsers(user);
-        if (addresses.isEmpty()) {
-            throw new SuccessException("Không có địa chỉ nào của người dùng");
+        Page<Address> addressResponsePage;
+        if(search.isEmpty()){
+            addressResponsePage = addressRepository.findAllByUsers(user,pageable);
+        }else {
+            addressResponsePage = addressRepository.findAllByUsersAndFullAddressContainsIgnoreCase(user,search,pageable);
         }
+        if(addressResponsePage.isEmpty()){
+            throw new NoSuchElementException("Không tìm thấy địa chỉ");
+        }
+        return addressResponsePage;
 
-        List<AddressResponse> responseList = addresses.stream()
-                .map( addr -> {
-                    AddressResponse addressResponse = new AddressResponse();
-                    addressResponse.setId(addr.getId());
-                    addressResponse.setFullAddress(addr.getFullAddress());
-                    addressResponse.setPhone(addr.getPhone());
-                    addressResponse.setReceiveName(addr.getReceiveName());
-                    addressResponse.setIsDefault(addr.getIsDefault());
-                    return addressResponse;
-                        }).collect(Collectors.toList());
-        return responseList;
+//        List<Address> addresses = addressRepository.findByUsers(user);
+//        if (addresses.isEmpty()) {
+//            throw new SuccessException("Không có địa chỉ nào của người dùng");
+//        }
+//
+//        List<AddressResponse> responseList = addresses.stream()
+//                .map( addr -> {
+//                    AddressResponse addressResponse = new AddressResponse();
+//                    addressResponse.setId(addr.getId());
+//                    addressResponse.setFullAddress(addr.getFullAddress());
+//                    addressResponse.setPhone(addr.getPhone());
+//                    addressResponse.setReceiveName(addr.getReceiveName());
+//                    addressResponse.setIsDefault(addr.getIsDefault());
+//                    return addressResponse;
+//                        }).collect(Collectors.toList());
+//        return responseList;
     }
 
     @Override

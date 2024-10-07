@@ -2,6 +2,9 @@ package sq.project.md5.perfumer.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +30,9 @@ public class AddressController {
     }
 
     @GetMapping("/address")
-    public ResponseEntity<DataResponse> getAllAddresses() throws CustomException {
-            List<AddressResponse> addressResponse = addressService.getUserAddresses();
-            return new ResponseEntity<>(new DataResponse(addressResponse, HttpStatus.OK), HttpStatus.OK);
+    public ResponseEntity<DataResponse> getAllAddresses(@PageableDefault(page = 0,size = 3,sort = "id",
+    direction = Sort.Direction.ASC) Pageable pageable,@RequestParam(value = "fullAddress",defaultValue = "")String search) {
+            return new ResponseEntity<>(new DataResponse(addressService.getUserAddresses(pageable,search), HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/address/{id}")
