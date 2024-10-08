@@ -41,13 +41,6 @@ public class UserController {
         return new ResponseEntity<>(new DataResponse(bannerService.getAllBanners(), HttpStatus.OK), HttpStatus.OK);
     }
 
-    private final BannerServiceImpl bannerService;
-
-    @GetMapping("/listBanner")
-    public ResponseEntity<DataResponse> getAllBanners( ) {
-        return new ResponseEntity<>(new DataResponse(bannerService.getAllBanners(), HttpStatus.OK), HttpStatus.OK);
-    }
-
     @GetMapping("/listCategories")
     public ResponseEntity<DataResponse> getAllCategoriesUser() {
         return new ResponseEntity<>(new DataResponse(categoryService.findAllNoPagination(),HttpStatus.OK),HttpStatus.OK);

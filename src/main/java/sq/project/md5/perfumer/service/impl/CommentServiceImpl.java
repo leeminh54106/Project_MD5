@@ -10,6 +10,7 @@ import sq.project.md5.perfumer.model.entity.*;
 
 import sq.project.md5.perfumer.repository.ICommentRepository;
 import sq.project.md5.perfumer.repository.IProductDetailRepository;
+import sq.project.md5.perfumer.repository.IProductRepository;
 import sq.project.md5.perfumer.service.ICommentService;
 import sq.project.md5.perfumer.service.IUserService;
 
