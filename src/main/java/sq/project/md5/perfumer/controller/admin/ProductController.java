@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductServiceImpl productService;
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse> getProductById(@PathVariable("id") Long id) {
         return new ResponseEntity<>(new DataResponse(productService.getProductById(id), HttpStatus.OK), HttpStatus.OK);

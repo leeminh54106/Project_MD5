@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface IBrandService {
     List<Brand> getAllBrands();
+    List<Brand> findAllNoPagination();
     Brand getBrandById(Long id);
     Brand addBrand(BrandRequest brandRequest) throws CustomException;
     Brand updateBrand(BrandRequest brandRequest, Long id) throws CustomException;
