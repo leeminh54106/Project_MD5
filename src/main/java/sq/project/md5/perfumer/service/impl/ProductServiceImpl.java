@@ -2,13 +2,13 @@ package sq.project.md5.perfumer.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.ProductRequest;
+import sq.project.md5.perfumer.model.dto.resp.ProductDetailResponse;
 import sq.project.md5.perfumer.model.entity.*;
 import sq.project.md5.perfumer.repository.*;
 import sq.project.md5.perfumer.service.IBrandService;
@@ -19,6 +19,7 @@ import sq.project.md5.perfumer.service.IProductService;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class ProductServiceImpl implements IProductService {
     private final ICategoryRepository categoryRepository;
     private final IBrandService brandService;
     private final ICategoryService categoryService;
+    private final IBrandRepository brandRepository;
 
     private final UploadFile uploadFile;
 
@@ -37,6 +39,8 @@ public class ProductServiceImpl implements IProductService {
     private final ICartRepository cartRepository;
 
     private final IProductDetailRepository productDetailRepository;
+
+    private final IImageRepository imageRepository;
 
     @Override
     public Page<Product> getAllProduct(Pageable pageable, String search) {
@@ -69,10 +73,9 @@ public class ProductServiceImpl implements IProductService {
             throw new CustomException("Danh mục không hoạt động, không thể thêm sản phẩm", HttpStatus.BAD_REQUEST);
         }
 
-        Brand brand = brandService.getBrandById(productRequest.getBrandId());
-        if (!brand.getStatus()) {
-            throw new CustomException("Danh mục không hoạt động, không thể thêm sản phẩm", HttpStatus.BAD_REQUEST);
-        }
+
+        Brand brand = brandRepository.findById(productRequest.getBrandId()).orElseThrow(() -> new NoSuchElementException("Không tìm thấy thương hiệu."));
+
 
         Product prod = Product.builder()
                 .sku(productRequest.getSku())
@@ -80,6 +83,7 @@ public class ProductServiceImpl implements IProductService {
                 .description(productRequest.getDescription())
                 .guarantee(productRequest.getGuarantee())
                 .instruct(productRequest.getInstruct())
+                .brand(brand)
                 .image(uploadFile.uploadLocal(productRequest.getImage()))
                 .status(productRequest.getStatus())
                 .createdAt(new Date())
@@ -199,9 +203,23 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findAll(Sort.by(Sort.Direction.ASC, "unitPrice"));
     }
 
-//    FIND ALL PAGINATION
 
+    @Override
+    public List<Product> getProuductTop5() {
+        return productRepository.findTop5ByOrderByCreatedAtDesc();
+    }
 
-
+    @Override
+    public List<ProductDetailResponse> getProductDetailByProductId(Long id) {
+       List<ProductDetailResponse> productDetails = productDetailRepository.findProductDetailByProductId(id).stream()
+               .map(item -> new ProductDetailResponse(
+                       item,
+                       imageRepository.findByProductDetailId(item.getId()).stream().map(Image::getImage).collect(Collectors.toSet()))
+               ).toList();
+       if(productDetails == null){
+           throw new NoSuchElementException("không tìm thấy chi tiết sản phẩm theo id sản phẩm");
+       }
+       return productDetails;
+    }
 
 }

@@ -22,6 +22,13 @@ import sq.project.md5.perfumer.service.impl.BannerServiceImpl;
 public class BannerController {
     private final BannerServiceImpl bannerService;
 
+
+    @GetMapping("/listBanner")
+    public ResponseEntity<DataResponse> getAllBanners( ) {
+        return new ResponseEntity<>(new DataResponse(bannerService.getAllBanners(), HttpStatus.OK), HttpStatus.OK);
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse> getBannerById(@PathVariable("id") Long id) {
         return new ResponseEntity<>(new DataResponse(bannerService.getBannerById(id), HttpStatus.OK), HttpStatus.OK);

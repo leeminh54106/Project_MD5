@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.ProductDetailRequest;
+import sq.project.md5.perfumer.model.dto.resp.ProductDetailResponse;
 import sq.project.md5.perfumer.model.entity.Image;
 import sq.project.md5.perfumer.model.entity.Product;
 import sq.project.md5.perfumer.model.entity.ProductDetail;
@@ -19,6 +20,7 @@ import sq.project.md5.perfumer.service.IProductService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +32,10 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     private final UploadFile uploadFile;
 
     @Override
-    public ProductDetail getProductDetailById(Long id) {
-        return productDetailRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại chi tiết sản phẩm nào có mã: " + id));
+
+    public ProductDetailResponse getProductDetailById(Long id) {
+        ProductDetail productDetail = productDetailRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại chi tiết sản phẩm nào có mã: " + id));
+        return new ProductDetailResponse(productDetail,imageRepository.findByProductDetailId(productDetail.getId()).stream().map(Image::getImage).collect(Collectors.toSet()));
     }
 
     @Override

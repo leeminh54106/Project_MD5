@@ -31,7 +31,8 @@ public class WishListController {
     }
 
     @GetMapping
-    public ResponseEntity<DataResponse> getWishList(@PageableDefault(page = 0,size = 5, sort = "id",direction = Sort.Direction.ASC) Pageable pageable) throws CustomException {
+    public ResponseEntity<DataResponse> getWishList(@PageableDefault(page = 0,size = 5, sort = "id",
+            direction = Sort.Direction.DESC) Pageable pageable) throws CustomException {
         return new ResponseEntity<>(new DataResponse( wishListService.getAllWishList(pageable), HttpStatus.OK), HttpStatus.OK);
     }
 

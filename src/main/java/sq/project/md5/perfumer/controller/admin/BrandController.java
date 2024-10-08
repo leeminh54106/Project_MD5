@@ -43,7 +43,7 @@ public class BrandController {
 
     @GetMapping
 
-    public ResponseEntity<DataResponse> searchByBannerName(@PageableDefault (page = 0, size = 5, sort = "id",
+    public ResponseEntity<DataResponse> searchByBannerName(@PageableDefault (page = 0, size = 3, sort = "id",
     direction = Sort.Direction.DESC) Pageable pageable
             ,@RequestParam (value = "search",defaultValue = "")String search
             , @RequestParam(required = false) Boolean noPagination) {
