@@ -2,13 +2,13 @@ package sq.project.md5.perfumer.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.ProductRequest;
+import sq.project.md5.perfumer.model.dto.resp.ProductDetailResponse;
 import sq.project.md5.perfumer.model.entity.*;
 import sq.project.md5.perfumer.repository.*;
 import sq.project.md5.perfumer.service.IBrandService;
@@ -19,7 +19,7 @@ import sq.project.md5.perfumer.service.IProductService;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +39,8 @@ public class ProductServiceImpl implements IProductService {
     private final ICartRepository cartRepository;
 
     private final IProductDetailRepository productDetailRepository;
+
+    private final IImageRepository imageRepository;
 
     @Override
     public Page<Product> getAllProduct(Pageable pageable, String search) {
@@ -208,8 +210,12 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public List<ProductDetail> getProductDetailByProductId(Long id) {
-       List<ProductDetail> productDetails = productDetailRepository.findProductDetailByProductId(id);
+    public List<ProductDetailResponse> getProductDetailByProductId(Long id) {
+       List<ProductDetailResponse> productDetails = productDetailRepository.findProductDetailByProductId(id).stream()
+               .map(item -> new ProductDetailResponse(
+                       item,
+                       imageRepository.findByProductDetailId(item.getId()).stream().map(Image::getImage).collect(Collectors.toSet()))
+               ).toList();
        if(productDetails == null){
            throw new NoSuchElementException("không tìm thấy chi tiết sản phẩm theo id sản phẩm");
        }
