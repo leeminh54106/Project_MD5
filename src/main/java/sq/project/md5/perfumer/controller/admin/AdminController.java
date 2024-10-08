@@ -15,7 +15,6 @@ import sq.project.md5.perfumer.service.IUserService;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/api.example.com/v1/admin")
 @RequiredArgsConstructor

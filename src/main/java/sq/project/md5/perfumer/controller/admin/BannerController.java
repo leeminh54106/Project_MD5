@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +21,6 @@ import sq.project.md5.perfumer.service.impl.BannerServiceImpl;
 @RequiredArgsConstructor
 public class BannerController {
     private final BannerServiceImpl bannerService;
-//
-//    @GetMapping
-//    public ResponseEntity<DataResponse> getAllBanners( ) {
-//        return new ResponseEntity<>(new DataResponse(bannerService.getAllBanners(), HttpStatus.OK), HttpStatus.OK);
-//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse> getBannerById(@PathVariable("id") Long id) {
@@ -47,7 +45,7 @@ public class BannerController {
 
 
     @GetMapping
-    public ResponseEntity<DataResponse> searchByBannerName(@PageableDefault(page = 0, size = 3, sort = "id",
+    public ResponseEntity<DataResponse> searchByBannerName(@PageableDefault(page = 0, size = 5, sort = "id",
             direction = Sort.Direction.ASC) Pageable pageable, @RequestParam(value = "search", defaultValue = "") String search) {
         return new ResponseEntity<>(new DataResponse(bannerService.getBannerWithPaginationAndSorting(pageable,search), HttpStatus.OK), HttpStatus.OK);
     }

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sq.project.md5.perfumer.model.dto.req.UserRequest;
 import sq.project.md5.perfumer.model.dto.resp.DataResponse;
+import sq.project.md5.perfumer.model.dto.resp.UserResponse;
 import sq.project.md5.perfumer.service.IUserService;
 
 
@@ -28,8 +29,7 @@ public class AccountController {
 
     @PutMapping("/account/updateProfile")
     public ResponseEntity<DataResponse> updateProfile(@Valid @ModelAttribute UserRequest userRequest) {
-        userService.updateUser(userRequest);
-        return new ResponseEntity<>(new DataResponse("Đã cập nhật thành công thông tin người dùng", HttpStatus.OK), HttpStatus.OK);
+        return new ResponseEntity<>(new DataResponse(new UserResponse(userService.updateUser(userRequest)), HttpStatus.OK), HttpStatus.OK);
     }
 
     @GetMapping("/account")

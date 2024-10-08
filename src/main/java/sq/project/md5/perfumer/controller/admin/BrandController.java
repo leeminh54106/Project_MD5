@@ -42,6 +42,7 @@ public class BrandController {
     }
 
     @GetMapping
+
     public ResponseEntity<DataResponse> searchByBannerName(@PageableDefault (page = 0, size = 3, sort = "id",
     direction = Sort.Direction.DESC) Pageable pageable
             ,@RequestParam (value = "search",defaultValue = "")String search
@@ -53,5 +54,6 @@ public class BrandController {
             // false -> Pag
             return new ResponseEntity<>(new DataResponse(brandService.getBrandWithPaginationAndSorting(pageable,search), HttpStatus.OK), HttpStatus.OK);
         }
+
     }
 }

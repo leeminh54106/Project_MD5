@@ -13,6 +13,7 @@ import sq.project.md5.perfumer.model.dto.resp.DataResponse;
 import sq.project.md5.perfumer.model.dto.resp.TopSellingProductResponse;
 import sq.project.md5.perfumer.model.entity.Product;
 import sq.project.md5.perfumer.service.*;
+import sq.project.md5.perfumer.service.impl.BannerServiceImpl;
 
 
 import java.util.List;
@@ -31,6 +32,17 @@ public class UserController {
 
     private final IWishListService wishListService;
 
+    private final BannerServiceImpl bannerService;
+
+    @GetMapping("/listBanner")
+    public ResponseEntity<DataResponse> getAllBanners( ) {
+        return new ResponseEntity<>(new DataResponse(bannerService.getAllBanners(), HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @GetMapping("/listCategories")
+    public ResponseEntity<DataResponse> getAllCategoriesUser() {
+        return new ResponseEntity<>(new DataResponse(categoryService.findAllNoPagination(),HttpStatus.OK),HttpStatus.OK);
+    }
 
     //Danh sách danh mục được bán
     @GetMapping("/category/categorySale")
