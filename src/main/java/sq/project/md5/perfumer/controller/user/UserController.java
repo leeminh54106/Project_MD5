@@ -31,6 +31,15 @@ public class UserController {
     private final IOrderService orderService;
 
     private final IWishListService wishListService;
+    private final IProductDetailService productDetailService;
+
+    private final BannerServiceImpl bannerService;
+
+
+    @GetMapping("/listBanner")
+    public ResponseEntity<DataResponse> getAllBanners( ) {
+        return new ResponseEntity<>(new DataResponse(bannerService.getAllBanners(), HttpStatus.OK), HttpStatus.OK);
+    }
 
     private final BannerServiceImpl bannerService;
 
@@ -46,7 +55,8 @@ public class UserController {
 
     //Danh sách danh mục được bán
     @GetMapping("/category/categorySale")
-    public ResponseEntity<DataResponse> getProductByCategoryForSale(@PageableDefault(page = 0,size = 4, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+    public ResponseEntity<DataResponse> getProductByCategoryForSale(@PageableDefault(page = 0,size = 5, sort = "id",
+            direction = Sort.Direction.DESC) Pageable pageable) {
         return new ResponseEntity<>(new DataResponse(categoryService.listCategoriesForSale(pageable), HttpStatus.OK),HttpStatus.OK);
     }
 
@@ -63,6 +73,12 @@ public class UserController {
         return new ResponseEntity<>(new DataResponse(productService.getProductById(id), HttpStatus.OK), HttpStatus.OK);
     }
 
+    //Chi tiết thông tin sản phẩm theo id
+    @GetMapping("/product/top")
+    public ResponseEntity<DataResponse> getProductTop5() {
+        return new ResponseEntity<>(new DataResponse(productService.getProuductTop5(), HttpStatus.OK), HttpStatus.OK);
+    }
+
     //Danh sách sản phẩm mới nhất
     @GetMapping("/product/newProduct")
     public ResponseEntity<DataResponse> getNewProduct() {
@@ -75,10 +91,41 @@ public class UserController {
         return new ResponseEntity<>(new DataResponse(productService.findProductByProductNameOrDescription(search), HttpStatus.OK),HttpStatus.OK);
     }
 
+    //tìm kiếm phân trang sắp xếp sản phẩm.
+    @GetMapping("/product")
+    public ResponseEntity<DataResponse> findProductAndSearch(@PageableDefault(page = 0, size = 5, sort = "id",
+            direction = Sort.Direction.ASC) Pageable pageable,@RequestParam(value = "search", defaultValue = "") String search) {
+
+        return new ResponseEntity<>(new DataResponse(productService.getProductWithPaginationAndSorting(pageable, search), HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @GetMapping("/listCategory")
+    public ResponseEntity<DataResponse> getAllCategories() {
+        return new ResponseEntity<>(new DataResponse(categoryService.getAllCategory(),HttpStatus.OK),HttpStatus.OK);
+    }
+
+    @GetMapping("/listProductDetail/{id}")
+    public ResponseEntity<DataResponse> getAllProductDetail(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(new DataResponse(productService.getProductDetailByProductId(id),HttpStatus.OK),HttpStatus.OK);
+    }
+
+    //tìm kiếm phân trang sắp xếp danh mục.
+    @GetMapping("/category/search")
+    public ResponseEntity<DataResponse> getCategoryAndSearch(@PageableDefault(page = 0, size = 5, sort = "id",
+            direction = Sort.Direction.ASC) Pageable pageable,@RequestParam(value = "search", defaultValue = "") String search) {
+        return new ResponseEntity<>(new DataResponse(categoryService.getCategoryWithPaginationAndSorting(pageable, search),HttpStatus.OK), HttpStatus.OK);
+    }
+
+    //tìm kiếm phân trang sắp xếp sản phẩm chi tiết.
+    @GetMapping("/productDetail/{id}")
+    public ResponseEntity<DataResponse> getProductDetailById(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(new DataResponse(productDetailService.getProductDetailById(id), HttpStatus.OK), HttpStatus.OK);
+    }
 
     //Danh sách sản phẩm được bán
     @GetMapping("/product/productSale")
-    public ResponseEntity<DataResponse> getProductForSale(@PageableDefault(page = 0,size = 2, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+    public ResponseEntity<DataResponse> getProductForSale(@PageableDefault(page = 0,size = 5, sort = "id",
+            direction = Sort.Direction.DESC) Pageable pageable) {
         return new ResponseEntity<>(new DataResponse(productService.listProductsForSale(pageable), HttpStatus.OK),HttpStatus.OK);
     }
 

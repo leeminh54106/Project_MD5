@@ -5,10 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.model.dto.req.CommentRequest;
+
 import sq.project.md5.perfumer.model.entity.*;
+
 import sq.project.md5.perfumer.repository.ICommentRepository;
 import sq.project.md5.perfumer.repository.IProductDetailRepository;
-import sq.project.md5.perfumer.repository.IProductRepository;
 import sq.project.md5.perfumer.service.ICommentService;
 import sq.project.md5.perfumer.service.IUserService;
 

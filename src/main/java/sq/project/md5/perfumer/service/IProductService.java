@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.ProductRequest;
 import sq.project.md5.perfumer.model.entity.Product;
+import sq.project.md5.perfumer.model.entity.ProductDetail;
 
 
 import java.util.List;
@@ -23,4 +24,6 @@ public interface IProductService {
     Page<Product> listProductsForSale(Pageable pageable);
 
     List<Product> getProductsSortedByPrice();
+    List<Product> getProuductTop5();
+    List<ProductDetail>getProductDetailByProductId(Long id);
 }

@@ -30,7 +30,7 @@ public class AddressController {
     }
 
     @GetMapping("/address")
-    public ResponseEntity<DataResponse> getAllAddresses(@PageableDefault(page = 0,size = 3,sort = "id",
+    public ResponseEntity<DataResponse> getAllAddresses(@PageableDefault(page = 0,size = 5,sort = "id",
     direction = Sort.Direction.ASC) Pageable pageable,@RequestParam(value = "fullAddress",defaultValue = "")String search) {
             return new ResponseEntity<>(new DataResponse(addressService.getUserAddresses(pageable,search), HttpStatus.OK), HttpStatus.OK);
     }

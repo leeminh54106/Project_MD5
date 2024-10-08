@@ -36,4 +36,7 @@ public interface IProductRepository extends JpaRepository<Product, Long> {
     List<Product> findTop5ByOrderByCreatedAtAsc();
 
     List<Product> findAll(Sort sort);
+
+//    @Query("select p from Product p order by p.createdAt DESC")
+    List<Product> findTop5ByOrderByCreatedAtDesc();
 }

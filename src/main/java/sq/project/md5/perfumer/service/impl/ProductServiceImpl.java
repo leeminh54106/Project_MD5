@@ -19,6 +19,7 @@ import sq.project.md5.perfumer.service.IProductService;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class ProductServiceImpl implements IProductService {
     private final ICategoryRepository categoryRepository;
     private final IBrandService brandService;
     private final ICategoryService categoryService;
+    private final IBrandRepository brandRepository;
 
     private final UploadFile uploadFile;
 
@@ -69,10 +71,9 @@ public class ProductServiceImpl implements IProductService {
             throw new CustomException("Danh mục không hoạt động, không thể thêm sản phẩm", HttpStatus.BAD_REQUEST);
         }
 
-        Brand brand = brandService.getBrandById(productRequest.getBrandId());
-        if (!brand.getStatus()) {
-            throw new CustomException("Danh mục không hoạt động, không thể thêm sản phẩm", HttpStatus.BAD_REQUEST);
-        }
+
+        Brand brand = brandRepository.findById(productRequest.getBrandId()).orElseThrow(() -> new NoSuchElementException("Không tìm thấy thương hiệu."));
+
 
         Product prod = Product.builder()
                 .sku(productRequest.getSku())
@@ -80,6 +81,7 @@ public class ProductServiceImpl implements IProductService {
                 .description(productRequest.getDescription())
                 .guarantee(productRequest.getGuarantee())
                 .instruct(productRequest.getInstruct())
+                .brand(brand)
                 .image(uploadFile.uploadLocal(productRequest.getImage()))
                 .status(productRequest.getStatus())
                 .createdAt(new Date())
@@ -199,9 +201,19 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findAll(Sort.by(Sort.Direction.ASC, "unitPrice"));
     }
 
-//    FIND ALL PAGINATION
 
+    @Override
+    public List<Product> getProuductTop5() {
+        return productRepository.findTop5ByOrderByCreatedAtDesc();
+    }
 
-
+    @Override
+    public List<ProductDetail> getProductDetailByProductId(Long id) {
+       List<ProductDetail> productDetails = productDetailRepository.findProductDetailByProductId(id);
+       if(productDetails == null){
+           throw new NoSuchElementException("không tìm thấy chi tiết sản phẩm theo id sản phẩm");
+       }
+       return productDetails;
+    }
 
 }

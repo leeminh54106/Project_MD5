@@ -26,6 +26,11 @@ public class CategoryServiceImpl implements ICategoryService {
     private final IProductRepository productRepository;
 
     @Override
+
+    public List<Category> getAllCategory() {
+       List<Category> categories = categoryRepository.findAll();
+
+
     public List<Category> findAllNoPagination() {
         return categoryRepository.findAll();
     }
@@ -40,6 +45,7 @@ public class CategoryServiceImpl implements ICategoryService {
         }else{
             categories = categoryRepository.findAllByCategoryNameContainsIgnoreCase(search,pageable);
         }
+
         return categories;
     }
 

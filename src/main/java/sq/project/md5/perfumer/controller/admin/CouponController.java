@@ -42,7 +42,7 @@ public class CouponController {
     }
 
     @GetMapping
-    public ResponseEntity<DataResponse> searchByCouponCode(@PageableDefault(page = 0, size = 3, sort = "id",
+    public ResponseEntity<DataResponse> searchByCouponCode(@PageableDefault(page = 0, size = 5, sort = "id",
             direction = Sort.Direction.ASC) Pageable pageable, @RequestParam(value = "search", defaultValue = "") String search) {
         return new ResponseEntity<>(new DataResponse(couponService.getCodeWithPaginationAndSorting(pageable, search),HttpStatus.OK), HttpStatus.OK);
     }

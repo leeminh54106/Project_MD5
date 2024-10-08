@@ -30,6 +30,7 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     private final UploadFile uploadFile;
 
     @Override
+
     public ProductDetail getProductDetailById(Long id) {
         return productDetailRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại chi tiết sản phẩm nào có mã: " + id));
     }
