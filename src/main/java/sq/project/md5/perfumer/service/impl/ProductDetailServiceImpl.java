@@ -1,6 +1,8 @@
 package sq.project.md5.perfumer.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.exception.CustomException;
@@ -110,4 +112,11 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         }
         return productDetails;
     }
+
+    @Override
+    public Page<ProductDetail> findAllPaginationByProductId(Long id, Pageable pageable) {
+        return productDetailRepository.findAllByProductId(id,pageable);
+    }
+
+
 }

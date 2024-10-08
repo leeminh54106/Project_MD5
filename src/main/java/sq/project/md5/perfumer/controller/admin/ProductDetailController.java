@@ -23,6 +23,14 @@ import java.util.List;
 public class ProductDetailController {
     private final ProductDetailServiceImpl productDetailService;
 
+
+    @GetMapping("/products/{productId}")
+    public ResponseEntity<DataResponse> findAllPaginationAdmin(@PathVariable Long productId
+    , @PageableDefault(page = 0,size = 2,sort = "id",direction = Sort.Direction.DESC) Pageable pageable){
+        return new ResponseEntity<>(new DataResponse(productDetailService.findAllPaginationByProductId(productId,pageable),HttpStatus.OK),HttpStatus.OK);
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse> getProductDetailById(@PathVariable("id") Long id) {
         return new ResponseEntity<>(new DataResponse(productDetailService.getProductDetailById(id), HttpStatus.OK), HttpStatus.OK);

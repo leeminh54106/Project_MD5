@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.BrandRequest;
 import sq.project.md5.perfumer.model.entity.Brand;
+import sq.project.md5.perfumer.model.entity.Category;
 import sq.project.md5.perfumer.model.entity.Product;
 import sq.project.md5.perfumer.repository.IBrandRepository;
 import sq.project.md5.perfumer.service.IBrandService;
@@ -21,6 +22,11 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class BrandServiceImpl implements IBrandService {
     private final IBrandRepository brandRepository;
+
+    @Override
+    public List<Brand> findAllNoPagination() {
+        return brandRepository.findAll();
+    }
 
     @Override
     public List<Brand> getAllBrands() {

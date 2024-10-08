@@ -11,6 +11,7 @@ import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.ProductRequest;
 import sq.project.md5.perfumer.model.entity.*;
 import sq.project.md5.perfumer.repository.*;
+import sq.project.md5.perfumer.service.IBrandService;
 import sq.project.md5.perfumer.service.ICategoryService;
 import sq.project.md5.perfumer.service.IProductService;
 
@@ -24,7 +25,7 @@ import java.util.NoSuchElementException;
 public class ProductServiceImpl implements IProductService {
     private final IProductRepository productRepository;
     private final ICategoryRepository categoryRepository;
-
+    private final IBrandService brandService;
     private final ICategoryService categoryService;
 
     private final UploadFile uploadFile;
@@ -68,6 +69,11 @@ public class ProductServiceImpl implements IProductService {
             throw new CustomException("Danh mục không hoạt động, không thể thêm sản phẩm", HttpStatus.BAD_REQUEST);
         }
 
+        Brand brand = brandService.getBrandById(productRequest.getBrandId());
+        if (!brand.getStatus()) {
+            throw new CustomException("Danh mục không hoạt động, không thể thêm sản phẩm", HttpStatus.BAD_REQUEST);
+        }
+
         Product prod = Product.builder()
                 .sku(productRequest.getSku())
                 .productName(productRequest.getProductName())
@@ -80,6 +86,7 @@ public class ProductServiceImpl implements IProductService {
                 .updatedAt(new Date())
                 .build();
         prod.setCategory(category);
+        prod.setBrand(brand);
         return productRepository.save(prod);
     }
 
@@ -191,4 +198,10 @@ public class ProductServiceImpl implements IProductService {
     public List<Product> getProductsSortedByPrice() {
         return productRepository.findAll(Sort.by(Sort.Direction.ASC, "unitPrice"));
     }
+
+//    FIND ALL PAGINATION
+
+
+
+
 }

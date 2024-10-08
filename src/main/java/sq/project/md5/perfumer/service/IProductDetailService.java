@@ -18,4 +18,7 @@ public interface IProductDetailService {
     void deleteProductDetail(Long id) throws CustomException;
 //    Page<ProductDetail> getProductDetailWithPaginationAndSorting(Pageable pageable,String search);
     List<ProductDetail> findProductDetailByProduct(Long id);
+
+//  FIND ALL PAGINATION
+    Page<ProductDetail> findAllPaginationByProductId(Long id,Pageable pageable);
 }
