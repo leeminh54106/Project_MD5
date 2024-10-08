@@ -12,7 +12,7 @@ import sq.project.md5.perfumer.model.entity.Product;
 import java.util.List;
 
 public interface ICategoryService {
-    Page<Category> getAllCategory(Pageable pageable, String search);
+    List<Category> getAllCategory();
     Category getCategoryById(Long id);
     Category addCategory(CategoryRequest category) throws CustomException;
     Category updateCategory(CategoryRequest category, Long id) throws CustomException;

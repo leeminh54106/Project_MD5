@@ -10,4 +10,5 @@ public interface IBrandRepository extends JpaRepository<Brand, Long> {
     Page<Brand> findAllByBrandNameContains(String brandName, Pageable pageable);
     boolean existsByBrandName(String brandName);
     boolean existsBrandById(Long id);
+
 }

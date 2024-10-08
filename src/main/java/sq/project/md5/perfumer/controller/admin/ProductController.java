@@ -49,9 +49,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<DataResponse> searchByProductName(@PageableDefault(page = 0,
-            size = 3,
-            sort = "id",
+    public ResponseEntity<DataResponse> searchByProductName(@PageableDefault(page = 0, size = 5, sort = "id",
             direction = Sort.Direction.ASC) Pageable pageable,@RequestParam(value = "search", defaultValue = "") String search) {
 
         return new ResponseEntity<>(new DataResponse(productService.getProductWithPaginationAndSorting(pageable, search), HttpStatus.OK), HttpStatus.OK);

@@ -13,7 +13,7 @@ import sq.project.md5.perfumer.repository.IProductRepository;
 import sq.project.md5.perfumer.service.ICategoryService;
 
 
-
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -25,13 +25,9 @@ public class CategoryServiceImpl implements ICategoryService {
     private final IProductRepository productRepository;
 
     @Override
-    public Page<Category> getAllCategory(Pageable pageable, String search) {
-        Page<Category> categories;
-        if(search == null || search.isEmpty()) {
-            categories = categoryRepository.findAll(pageable);
-        }else{
-            categories = categoryRepository.findAllByCategoryNameContainsIgnoreCase(search,pageable);
-        }
+    public List<Category> getAllCategory() {
+       List<Category> categories = categoryRepository.findAll();
+
         return categories;
     }
 

@@ -26,7 +26,7 @@ public class OrderAdminController {
     private final OrderServiceImpl orderService;
 
     @GetMapping
-    public ResponseEntity<DataResponse> getAllOrders(@PageableDefault(page = 0,size = 3, sort = "id",
+    public ResponseEntity<DataResponse> getAllOrders(@PageableDefault(page = 0,size = 5, sort = "id",
     direction = Sort.Direction.ASC) Pageable pageable,@RequestParam(value = "search",defaultValue = "")String search) {
         return new ResponseEntity<>(new DataResponse(orderService.getAllOrders(pageable,search), HttpStatus.OK), HttpStatus.OK);
     }
@@ -39,7 +39,7 @@ public class OrderAdminController {
 
     @GetMapping("orderStatus/{status}")
     public ResponseEntity<DataResponse> getOrderByStatus(@PathVariable OrderStatus status,
-                                                         @PageableDefault(page = 0, size = 3, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+                                                         @PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<OrderResponse> orderResponses = orderService.getOrderResponsesByStatus(status, pageable);
         return new ResponseEntity<>(new DataResponse(orderResponses, HttpStatus.OK), HttpStatus.OK);
     }

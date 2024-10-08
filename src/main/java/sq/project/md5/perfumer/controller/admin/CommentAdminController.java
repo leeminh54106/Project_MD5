@@ -28,7 +28,7 @@ public class CommentAdminController {
     }
 
     @GetMapping
-    public ResponseEntity<DataResponse> searchCommentByUserName(@PageableDefault(page = 0, size = 3, sort = "id",
+    public ResponseEntity<DataResponse> searchCommentByUserName(@PageableDefault(page = 0, size = 5, sort = "id",
             direction = Sort.Direction.ASC) Pageable pageable, @RequestParam(value = "username", defaultValue = "") String search) {
         return new ResponseEntity<>(new DataResponse(commentService.getCommentWithPaginationAndSorting(pageable, search),HttpStatus.OK), HttpStatus.OK);
     }

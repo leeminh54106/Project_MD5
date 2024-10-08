@@ -26,9 +26,6 @@ public class BannerServiceImpl implements IBannerService {
     @Override
     public List<Banner> getAllBanners() {
         List<Banner> banners = bannerRepository.findAll();
-        if (banners.isEmpty()) {
-            throw new NoSuchElementException("Không có banner.");
-        }
         return banners;
     }
 

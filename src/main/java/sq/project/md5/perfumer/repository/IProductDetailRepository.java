@@ -31,7 +31,7 @@ public interface IProductDetailRepository extends JpaRepository<ProductDetail,Lo
 
 //    boolean existsByProductIdAnd(String productName, Long categoryId);
 
-
+    List<ProductDetail> findAllByProductId(Long productId);
 
 
 }

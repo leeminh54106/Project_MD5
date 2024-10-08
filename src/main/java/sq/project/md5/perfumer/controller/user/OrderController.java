@@ -73,14 +73,10 @@ public class OrderController {
     //Lấy ra danh sách lịch sử mua hàng
     @GetMapping("/order/history")
     public ResponseEntity<DataResponse> getAllOrderHistory(
-            @PageableDefault(page = 0, size = 3, sort = "id",  direction = Sort.Direction.ASC) Pageable pageable,
+            @PageableDefault(page = 0, size = 5, sort = "id",  direction = Sort.Direction.ASC) Pageable pageable,
             @RequestParam(value = "search", defaultValue = "") String search) {
 
         Page<Order> orders = orderService.getUserOrdersWithPaginationAndSearch(pageable, search);
-//        List<OrderResponse> list = orders.getContent().stream()
-//                .map(OrderConverterResponse::changeOrderResponse)
-//                .collect(Collectors.toList());
-
         return new ResponseEntity<>(new DataResponse(orders, HttpStatus.OK), HttpStatus.OK);
     }
 }
