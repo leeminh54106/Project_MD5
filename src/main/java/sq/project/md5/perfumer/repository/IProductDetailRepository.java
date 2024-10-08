@@ -31,7 +31,7 @@ public interface IProductDetailRepository extends JpaRepository<ProductDetail,Lo
 
 //    boolean existsByProductIdAnd(String productName, Long categoryId);
 
-
-
+//    find all pagination
+    Page<ProductDetail> findAllByProductId (Long id,Pageable pageable);
 
 }
