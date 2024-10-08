@@ -22,11 +22,6 @@ import java.util.List;
 public class ProductController {
     private final ProductServiceImpl productService;
 
-//    @GetMapping
-//    public ResponseEntity<DataResponse> getAllProducts(@PageableDefault(page = 0,size = 5, sort = "id",direction = Sort.Direction.ASC) Pageable pageable, @RequestParam(defaultValue = "" ) String search) {
-//        return new ResponseEntity<>(new DataResponse(productService.getAllProduct(pageable,search),HttpStatus.OK),HttpStatus.OK);
-//    }
-
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse> getProductById(@PathVariable("id") Long id) {
         return new ResponseEntity<>(new DataResponse(productService.getProductById(id), HttpStatus.OK), HttpStatus.OK);
@@ -49,15 +44,18 @@ public class ProductController {
     }
 
     @GetMapping
+
     public ResponseEntity<DataResponse> searchByProductName(@PageableDefault(page = 0, size = 5, sort = "id",
             direction = Sort.Direction.ASC) Pageable pageable,@RequestParam(value = "search", defaultValue = "") String search) {
 
+
         return new ResponseEntity<>(new DataResponse(productService.getProductWithPaginationAndSorting(pageable, search), HttpStatus.OK), HttpStatus.OK);
     }
-
 
     @GetMapping("/sortedByPrice")
     public List<Product> getProductsSortedByPrice() {
         return productService.getProductsSortedByPrice();
     }
+
+
 }

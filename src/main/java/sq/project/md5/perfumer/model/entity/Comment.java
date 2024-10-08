@@ -22,7 +22,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "product_detail_id")
-    private ProductDetail productDetail;
+    private Product product;
 
     private Boolean status;
 

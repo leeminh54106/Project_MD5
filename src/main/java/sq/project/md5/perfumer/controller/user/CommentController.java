@@ -19,4 +19,10 @@ public class CommentController {
         commentService.addComment(commentRequest);
         return new ResponseEntity<>(new DataResponse("Bạn đã bình luận thành công!", HttpStatus.OK), HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<DataResponse> deleteCommentUser(@PathVariable Long id) {
+        commentService.deleteComment(id);
+        return new ResponseEntity<>(new DataResponse("Bạn đã xóa bình luận thành công!", HttpStatus.OK), HttpStatus.OK);
+    }
 }

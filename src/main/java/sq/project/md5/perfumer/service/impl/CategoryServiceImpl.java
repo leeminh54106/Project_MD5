@@ -20,13 +20,31 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements ICategoryService {
 
+
     private final ICategoryRepository categoryRepository;
 
     private final IProductRepository productRepository;
 
     @Override
+
     public List<Category> getAllCategory() {
        List<Category> categories = categoryRepository.findAll();
+
+
+    public List<Category> findAllNoPagination() {
+        return categoryRepository.findAll();
+    }
+
+    @Override
+    public Page<Category> getAllCategory(Pageable pageable, String search) {
+        Page<Category> categories;
+
+
+        if(search == null || search.isEmpty()) {
+            categories = categoryRepository.findAll(pageable);
+        }else{
+            categories = categoryRepository.findAllByCategoryNameContainsIgnoreCase(search,pageable);
+        }
 
         return categories;
     }

@@ -26,7 +26,7 @@ import java.util.Optional;
 public class ProductServiceImpl implements IProductService {
     private final IProductRepository productRepository;
     private final ICategoryRepository categoryRepository;
-
+    private final IBrandService brandService;
     private final ICategoryService categoryService;
     private final IBrandRepository brandRepository;
 
@@ -71,7 +71,9 @@ public class ProductServiceImpl implements IProductService {
             throw new CustomException("Danh mục không hoạt động, không thể thêm sản phẩm", HttpStatus.BAD_REQUEST);
         }
 
+
         Brand brand = brandRepository.findById(productRequest.getBrandId()).orElseThrow(() -> new NoSuchElementException("Không tìm thấy thương hiệu."));
+
 
         Product prod = Product.builder()
                 .sku(productRequest.getSku())
@@ -86,6 +88,7 @@ public class ProductServiceImpl implements IProductService {
                 .updatedAt(new Date())
                 .build();
         prod.setCategory(category);
+        prod.setBrand(brand);
         return productRepository.save(prod);
     }
 
@@ -198,6 +201,7 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findAll(Sort.by(Sort.Direction.ASC, "unitPrice"));
     }
 
+
     @Override
     public List<Product> getProuductTop5() {
         return productRepository.findTop5ByOrderByCreatedAtDesc();
@@ -211,4 +215,5 @@ public class ProductServiceImpl implements IProductService {
        }
        return productDetails;
     }
+
 }

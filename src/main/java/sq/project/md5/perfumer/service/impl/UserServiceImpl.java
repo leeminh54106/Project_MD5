@@ -140,7 +140,7 @@ public class UserServiceImpl implements IUserService {
         }
 
         if (userRequest.getPhone() != null) {
-            if (!updateUser.getPhone().equals(userRequest.getPhone()) && userRepository.existsByPhone(userRequest.getPhone())) {
+            if (!userRequest.getPhone().equals(updateUser.getPhone()) && userRepository.existsByPhone(userRequest.getPhone())) {
                 throw new NoSuchElementException("Số điện thoại đã tồn tại.");
             }
             updateUser.setPhone(userRequest.getPhone());
@@ -150,7 +150,7 @@ public class UserServiceImpl implements IUserService {
             updateUser.setAddress(userRequest.getAddress());
         }
 
-        if (userRequest.getAvatar() != null) {
+        if (userRequest.getAvatar() != null && userRequest.getAvatar().getSize() > 0) {
             updateUser.setAvatar(uploadFile.uploadLocal(userRequest.getAvatar()));
         }
 

@@ -5,9 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.model.dto.req.CommentRequest;
-import sq.project.md5.perfumer.model.entity.Comment;
-import sq.project.md5.perfumer.model.entity.ProductDetail;
-import sq.project.md5.perfumer.model.entity.Users;
+
+import sq.project.md5.perfumer.model.entity.*;
+
 import sq.project.md5.perfumer.repository.ICommentRepository;
 import sq.project.md5.perfumer.repository.IProductDetailRepository;
 import sq.project.md5.perfumer.service.ICommentService;
@@ -20,17 +20,17 @@ import java.util.NoSuchElementException;
 public class CommentServiceImpl implements ICommentService {
     private final ICommentRepository commentRepository;
     private final IUserService userService;
-    private final IProductDetailRepository productDetailRepository;
+    private final IProductRepository productRepository;
 
     @Override
     public Comment addComment(CommentRequest commentRequest) {
         Users user = userService.getCurrentLoggedInUser();
-        ProductDetail productDetail = productDetailRepository.findById(commentRequest.getProductDetailId())
+        Product product = productRepository.findById(commentRequest.getProductId())
                 .orElseThrow(() -> new NoSuchElementException("sản phẩm không tồn tại."));
         Comment comment = Comment.builder()
                 .user(user)
                 .content(commentRequest.getContent())
-                .productDetail(productDetail)
+                .product(product)
                 .status(commentRequest.getStatus())
                 .build();
         return commentRepository.save(comment);

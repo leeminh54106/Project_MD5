@@ -13,7 +13,7 @@ public class CommentRequest {
     @NotBlank(message = "bình luận không được để trống!")
     private String content;
     @NotNull(message = "Id sản phẩm chi tiết không được để trống!")
-    private Long productDetailId;
+    private Long productId;
 
     private Boolean status = false;
 }
