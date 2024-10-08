@@ -30,8 +30,8 @@ public class AdminController {
 
 
     @GetMapping("/userAdmin")
-    public ResponseEntity<DataResponse> getAllUserAdmin(@PageableDefault(page = 0,size = 5, sort = "id",direction = Sort.Direction.ASC) Pageable pageable, @RequestParam(defaultValue = "" ) String search) {
-        return new ResponseEntity<>(new DataResponse(userService.getAllUsers(pageable, search), HttpStatus.OK), HttpStatus.OK);
+    public ResponseEntity<DataResponse> getAllUserAdmin(@PageableDefault(page = 0,size = 5, sort = "id",direction = Sort.Direction.ASC) Pageable pageable, @RequestParam(defaultValue = "" ) String search, @RequestParam(defaultValue = "") String SortOptions) {
+        return new ResponseEntity<>(new DataResponse(userService.getAllUsers(pageable, search, SortOptions), HttpStatus.OK), HttpStatus.OK);
     }
 
 

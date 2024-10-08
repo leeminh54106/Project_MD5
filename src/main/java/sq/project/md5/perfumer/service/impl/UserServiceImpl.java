@@ -42,8 +42,18 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Page<Users> getAllUsers(Pageable pageable, String search) {
+    public Page<Users> getAllUsers(Pageable pageable, String search, String SortOptions) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "id"); // Default sort by "id"
+        if ("aToZ".equals(SortOptions)) {
+            sort = Sort.by(Sort.Direction.ASC, "username");
+        } else if ("zToA".equals(SortOptions)) {
+            sort = Sort.by(Sort.Direction.DESC, "username");
+        }
+
+
+
         Page<Users> user;
+
         if(search == null || search.isEmpty()) {
             user = userRepository.findAll(pageable);
         } else {

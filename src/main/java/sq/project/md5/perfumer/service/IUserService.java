@@ -10,7 +10,7 @@ import sq.project.md5.perfumer.model.entity.Users;
 import java.util.List;
 
 public interface IUserService {
-    Page<Users> getAllUsers(Pageable pageable, String search);
+    Page<Users> getAllUsers(Pageable pageable, String search, String SortOptions);
     Users getUserById(Long id);
     Users getUserByUserName(String username);
     Users updateUserStatus(Long id, Boolean status) throws CustomException;
