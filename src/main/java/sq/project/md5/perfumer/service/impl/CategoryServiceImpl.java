@@ -28,12 +28,10 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
 
     public List<Category> getAllCategory() {
-       List<Category> categories = categoryRepository.findAll();
-
-
-    public List<Category> findAllNoPagination() {
-        return categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findAll();
+        return categories;
     }
+
 
     @Override
     public Page<Category> getAllCategory(Pageable pageable, String search) {
@@ -50,24 +48,17 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
 
-
-//    @Override
-//    public List<Category> getAllCategories() {
-//        List<Category> categories = categoryRepository.findAll();
-//
-//        if (categories.isEmpty()) {
-//            throw new NoSuchElementException("Không có danh mục nào.");
-//        }
-//
-//        return categories;
-//    }
+    @Override
+    public List<Category> findAllNoPagination() {
+        return categoryRepository.findAll();
+    }
 
     @Override
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại danh mục với id: " + id));
 
     }
-
+//
     @Override
     public Category addCategory(CategoryRequest category) throws CustomException {
         if (categoryRepository.existsByCategoryName(category.getCategoryName())) {
@@ -81,7 +72,7 @@ public class CategoryServiceImpl implements ICategoryService {
                 .build();
         return categoryRepository.save(cate);
     }
-
+//
     @Override
     public Category updateCategory(CategoryRequest category, Long id) throws CustomException {
         Category existingCategory = categoryRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Khong ton tai danh muc nao co ma: " + id));
@@ -99,7 +90,7 @@ public class CategoryServiceImpl implements ICategoryService {
         cate.setId(id);
         return categoryRepository.save(cate);
     }
-
+//
     @Override
     public void deleteCategory(Long id){
         categoryRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Khong ton tai danh mục: " + id));
@@ -110,7 +101,7 @@ public class CategoryServiceImpl implements ICategoryService {
 
         categoryRepository.deleteById(id);
     }
-
+//
     @Override
     public Page<Category> getCategoryWithPaginationAndSorting(Pageable pageable, String search)  {
         Page<Category> categories;
