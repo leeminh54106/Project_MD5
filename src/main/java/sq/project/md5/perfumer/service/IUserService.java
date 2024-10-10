@@ -19,4 +19,5 @@ public interface IUserService {
     Users getCurrentLoggedInUser();
 
     Users updateUser(UserRequest userRequest);
+    List<Users> findAll();
 }

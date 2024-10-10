@@ -30,24 +30,24 @@ public class ProductDetailController {
         return new ResponseEntity<>(new DataResponse(productDetailService.findAllPaginationByProductId(productId,pageable),HttpStatus.OK),HttpStatus.OK);
     }
 
-
+    //response productdetail
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse> getProductDetailById(@PathVariable("id") Long id) {
         return new ResponseEntity<>(new DataResponse(productDetailService.getProductDetailById(id), HttpStatus.OK), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<DataResponse> addProduct(@Valid @ModelAttribute ProductDetailRequest productDetailRequest) throws CustomException {
+    public ResponseEntity<DataResponse> addProductDetail(@Valid @ModelAttribute ProductDetailRequest productDetailRequest) throws CustomException {
         return new ResponseEntity<>(new DataResponse(productDetailService.addProductDetail(productDetailRequest), HttpStatus.CREATED), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DataResponse> updateProduct(@Valid @ModelAttribute ProductDetailRequest ProductDetailRequest, @PathVariable("id") Long id) throws CustomException {
+    public ResponseEntity<DataResponse> updateProductDetail(@Valid @ModelAttribute ProductDetailRequest ProductDetailRequest, @PathVariable("id") Long id) throws CustomException {
         return new ResponseEntity<>(new DataResponse(productDetailService.updateProductDetail(ProductDetailRequest, id), HttpStatus.OK), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<DataResponse> deleteProduct(@PathVariable("id") Long id) throws CustomException {
+    public ResponseEntity<DataResponse> deleteProductDetail(@PathVariable("id") Long id) throws CustomException {
         productDetailService.deleteProductDetail(id);
         return new ResponseEntity<>(new DataResponse("Đã xóa thành công sản phẩm chi tiết có mã: "+id, HttpStatus.OK), HttpStatus.OK);
     }

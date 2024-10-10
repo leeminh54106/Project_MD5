@@ -17,4 +17,5 @@ public interface ICommentService {
  Page<Comment> getCommentWithPaginationAndSortingByProductId(Long productId, Pageable pageable, String search);
 
 Comment updateComment(Long commentId, CommentRequest commentRequest);
+
 }

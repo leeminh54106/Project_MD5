@@ -44,14 +44,8 @@ public class ProductServiceImpl implements IProductService {
     private final IImageRepository imageRepository;
 
     @Override
-    public Page<Product> getAllProduct(Pageable pageable, String search) {
-        Page<Product> products;
-        if (search == null || search.isEmpty()) {
-            products = productRepository.findAll(pageable);
-        } else {
-            products = productRepository.findProductByProductNameContainsIgnoreCase(search, pageable);
-        }
-        return products;
+    public List<Product> getAllProduct() {
+        return productRepository.findAll();
     }
 
     @Override

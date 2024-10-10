@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class ProductRequest {
     @NotBlank(message = "sku không được để trống")
-    private String sku= UUID.randomUUID().toString();
+    private String sku= UUID.randomUUID().toString().substring(0, 8);
 
     @NotBlank(message = "Tên sản phẩm không được để trống")
     private String productName;

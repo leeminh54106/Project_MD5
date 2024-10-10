@@ -13,7 +13,7 @@ import sq.project.md5.perfumer.model.entity.ProductDetail;
 import java.util.List;
 
 public interface IProductService {
-    Page<Product> getAllProduct(Pageable pageable, String search);
+    List<Product> getAllProduct();
     Product getProductById(Long id);
     Product addProduct(ProductRequest product) throws CustomException;
     Product updateProduct(ProductRequest product, Long id) throws CustomException;

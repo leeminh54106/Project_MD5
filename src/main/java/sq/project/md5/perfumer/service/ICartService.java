@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ICartService {
     ShoppingCart addToCart(AddToCartRequest addToCart);
-    List<CartResponse> getCart() ;
+    List<ShoppingCart> getCart() ;
     void removeProductToCart(Long id);
     void removeAllProductToCart();
     ShoppingCart updateCartQuantity(Long id, Integer quantity);

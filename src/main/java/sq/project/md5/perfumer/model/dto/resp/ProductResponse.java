@@ -1,5 +1,6 @@
 package sq.project.md5.perfumer.model.dto.resp;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,7 +28,6 @@ public class ProductResponse {
     private String instruct;
 
     private String image;
-
 
     List<ProductDetailResponse> productDetailResponses;
 }

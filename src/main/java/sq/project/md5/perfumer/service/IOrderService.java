@@ -11,6 +11,8 @@ import sq.project.md5.perfumer.model.dto.resp.OrderResponse;
 import sq.project.md5.perfumer.model.dto.resp.TopSellingProductResponse;
 import sq.project.md5.perfumer.model.entity.Order;
 
+import java.util.List;
+
 public interface IOrderService {
     Order orderNow(OrderRequest orderRequest) ;
     Page<Order> getAllOrders(Pageable pageable, String search);
@@ -24,4 +26,7 @@ public interface IOrderService {
     Page<TopSellingProductResponse> getTopSellingProducts(Integer limit, Pageable pageable) throws CustomException;
     Page<Order> getUserOrdersWithPaginationAndSearch(Pageable pageable, String search);
     OrderResponse getOrderByUser(Long orderId);
+
+    List<Order> findAll();
+    Double totalRevenue();
 }

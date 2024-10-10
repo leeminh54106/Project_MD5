@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sq.project.md5.perfumer.constants.OrderStatus;
+import sq.project.md5.perfumer.model.entity.Product;
 
 
 import java.util.Date;
@@ -42,4 +43,5 @@ public class OrderResponse {
     private Date receivedAt;
 
     private List<OrderDetailResponse> orderDetail;
+    private List<Product> product;
 }

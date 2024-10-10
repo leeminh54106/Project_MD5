@@ -67,20 +67,21 @@ public class CartServiceImpl implements ICartService {
     }
 
     @Override
-    public List<CartResponse> getCart() {
+    public List<ShoppingCart> getCart() {
         Users user = userService.getCurrentLoggedInUser();
         List<ShoppingCart> shoppingCarts = cartRepository.findAllByUsers(user);
         if (shoppingCarts.isEmpty()) {
             throw new SuccessException("Giỏ hàng trống");
         }
-        return shoppingCarts.stream().map(cart -> CartResponse.builder()
-                        .id(cart.getId())
-                        .productId(cart.getProductDetail().getId())
-                        .productName(cart.getProductDetail().getProduct().getProductName())
-                        .unitPrice(cart.getProductDetail().getUnitPrice())
-                        .orderQuantity(cart.getOrderQuantity())
-                        .build())
-                .collect(Collectors.toList());
+        return shoppingCarts;
+//                shoppingCarts.stream().map(cart -> CartResponse.builder()
+//                                .id(cart.getId())
+//                                .productId(cart.getProductDetail().getId())
+//                                .productName(cart.getProductDetail().getProduct().getProductName())
+//                                .unitPrice(cart.getProductDetail().getUnitPrice())
+//                                .orderQuantity(cart.getOrderQuantity())
+//                                .build())
+//                        .collect(Collectors.toList());
     }
 
 
