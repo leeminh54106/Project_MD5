@@ -32,7 +32,6 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     private final UploadFile uploadFile;
 
     @Override
-
     public ProductDetailResponse getProductDetailById(Long id) {
         ProductDetail productDetail = productDetailRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại chi tiết sản phẩm nào có mã: " + id));
         return new ProductDetailResponse(productDetail,imageRepository.findByProductDetailId(productDetail.getId()).stream().map(Image::getImage).collect(Collectors.toSet()));

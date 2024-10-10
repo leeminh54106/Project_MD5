@@ -168,4 +168,9 @@ public class UserServiceImpl implements IUserService {
 
         return userRepository.save(updateUser);
     }
+
+    @Override
+    public List<Users> findAll() {
+        return userRepository.findAll();
+    }
 }

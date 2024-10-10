@@ -210,6 +210,16 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public OrderResponse getOrderById(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Không tồn tại đơn hàng"));
+        List<Product> products = order.getOrderDetails().stream()
+                .map(detail -> {
+                    Product product = detail.getProductDetail().getProduct();
+                    return Product.builder()
+                            .id(product.getId())
+                            .productName(product.getProductName())
+                            .image(product.getImage())
+                            .build();
+                })
+                .collect(Collectors.toList());
 
         return OrderResponse.builder()
                 .id(order.getId())
@@ -233,6 +243,7 @@ public class OrderServiceImpl implements IOrderService {
                                                 .quantity(detail.getOrderQuantity())
                                                 .build())
                                 .collect(Collectors.toList()))
+                .product(products)
                 .build();
     }
 
@@ -349,6 +360,17 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
+    public List<Order> findAll() {
+        return orderRepository.findAll();
+    }
+
+    @Override
+    public Double totalRevenue() {
+
+        return orderRepository.sumTotalPrice();
+    }
+
+    @Override
     public Page<Order> getUserOrdersWithPaginationAndSearch(Pageable pageable, String search) {
         Users user = userService.getCurrentLoggedInUser();
         Page<Order> orders;
@@ -371,5 +393,6 @@ public class OrderServiceImpl implements IOrderService {
             throw new NoSuchElementException("Không có đơn hàng nào cho người dùng này.");
         }
         return orders;
+
 }}
 

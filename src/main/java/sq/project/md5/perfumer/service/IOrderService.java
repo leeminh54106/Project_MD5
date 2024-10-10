@@ -25,4 +25,6 @@ public interface IOrderService {
     boolean cancelOrder(Long id) throws CustomException;
     Page<TopSellingProductResponse> getTopSellingProducts(Integer limit, Pageable pageable) throws CustomException;
     Page<Order> getUserOrdersWithPaginationAndSearch(Pageable pageable, String search);
+    List<Order>findAll();
+    Double totalRevenue();
 }
