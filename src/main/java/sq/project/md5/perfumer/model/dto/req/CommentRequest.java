@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,5 +17,7 @@ public class CommentRequest {
     @NotNull(message = "Id sản phẩm chi tiết không được để trống!")
     private Long productId;
 
-    private Boolean status = false;
+    private Boolean status = true;
+
+    private Date createdAt;
 }

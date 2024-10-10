@@ -6,6 +6,5 @@ public enum OrderStatus {
     DELIVERY, // Đang giao hàng
     SUCCESS, //Đã giao hàng
     CANCEL, //Đã hủy đơn
-    DENIED //Bị từ chối
 }
 

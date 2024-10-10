@@ -29,6 +29,5 @@ public class ProductResponse {
 
     private String image;
 
-
     List<ProductDetailResponse> productDetailResponses;
 }

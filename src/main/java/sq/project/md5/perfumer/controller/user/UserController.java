@@ -15,6 +15,7 @@ import sq.project.md5.perfumer.model.entity.Product;
 import sq.project.md5.perfumer.repository.IProductRepository;
 import sq.project.md5.perfumer.service.*;
 import sq.project.md5.perfumer.service.impl.BannerServiceImpl;
+import sq.project.md5.perfumer.service.impl.ProductDetailServiceImpl;
 
 
 import java.util.List;
@@ -34,7 +35,9 @@ public class UserController {
     private final IWishListService wishListService;
 
     private final BannerServiceImpl bannerService;
+
     private final IProductDetailService productDetailService;
+
 
     @GetMapping("/listBanner")
     public ResponseEntity<DataResponse> getAllBanners( ) {
@@ -68,6 +71,9 @@ public class UserController {
         return new ResponseEntity<>(new DataResponse(productService.getProductById(id), HttpStatus.OK), HttpStatus.OK);
     }
 
+
+
+    
     //Danh sách sản phẩm mới nhất
     @GetMapping("/product/newProduct")
     public ResponseEntity<DataResponse> getNewProduct() {
@@ -85,6 +91,7 @@ public class UserController {
     public ResponseEntity<DataResponse> getTopProduct() {
         return new ResponseEntity<>(new DataResponse(productService.getProuductTop5(), HttpStatus.OK), HttpStatus.OK);
     }
+
 
     //Danh sách sản phẩm được bán
     @GetMapping("/product/productSale")

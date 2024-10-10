@@ -55,8 +55,8 @@ public class WishListServiceImpl implements IWishListService {
         // Chuyển đổi WishList thành WishListResponse
         WishListResponse response = new WishListResponse();
         response.setId(wishList.getId());
-        response.setWishlistProName(product.getProductName());
-        response.setProductId(product.getId());
+//        response.setWishlistProName(product.getProductName());
+        response.setProduct(product);
         response.setUserId(user.getId());
         return response;
     }
@@ -71,9 +71,9 @@ public class WishListServiceImpl implements IWishListService {
         Page<WishListResponse> responseList = wishList
                 .map(wish -> { WishListResponse response = new WishListResponse();
                     response.setId(wish.getId());
-                    response.setProductId(wish.getProduct().getId());
-                    response.setWishlistProName(wish.getProduct().getProductName());
-                    response.setUserId(user.getId());
+                    response.setProduct(wish.getProduct());
+//                    response.setWishlistProName(wish.getProduct().getProductName());
+                    response.setUserId(wish.getUser().getId());
                     return response;});
         return responseList;
     }

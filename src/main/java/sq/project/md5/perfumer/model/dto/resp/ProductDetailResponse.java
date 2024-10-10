@@ -15,6 +15,7 @@ import java.util.Set;
 @Data
 @Builder
 public class ProductDetailResponse {
+
     private Long id;
 
     private Double unitPrice;

@@ -31,4 +31,6 @@ public interface IWishListRepository extends JpaRepository<WishList, Long> {
 
     @Transactional
     void deleteByUserIdAndProductId(Long userId, Long productId);
+
+    List<WishList> findAllByUserId(Long userId);
 }

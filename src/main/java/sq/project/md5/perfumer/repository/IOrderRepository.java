@@ -24,6 +24,7 @@ public interface IOrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findByIdAndUsers(Long id, Users users);
     Page<Order> findAllByUsersAndStatus(Users user, OrderStatus status, Pageable pageable);
     Page<Order> findAllByUsersUsernameContainsIgnoreCase(String search, Pageable pageable);
+    Optional<Order> findAllByIdAndUsersId(Long orderId, Long userId);
 
     @Query("SELECT SUM(o.totalPrice) FROM Order o")
     Double sumTotalPrice();
