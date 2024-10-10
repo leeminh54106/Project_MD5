@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sq.project.md5.perfumer.constants.OrderStatus;
 import sq.project.md5.perfumer.exception.CustomException;
@@ -16,6 +17,7 @@ import sq.project.md5.perfumer.model.dto.resp.DataResponse;
 import sq.project.md5.perfumer.model.dto.resp.OrderConverterResponse;
 import sq.project.md5.perfumer.model.dto.resp.OrderResponse;
 import sq.project.md5.perfumer.model.entity.Order;
+import sq.project.md5.perfumer.security.principle.MyUserDetailCustom;
 import sq.project.md5.perfumer.service.IOrderService;
 
 import java.util.List;
@@ -62,13 +64,6 @@ public class OrderController {
         return new ResponseEntity<>(new DataResponse(orderResponse, HttpStatus.OK), HttpStatus.OK);
     }
 
-    //Lấy ra danh sách lịch sử mua hàng
-//    @GetMapping("/order/history")
-//    public ResponseEntity<DataResponse> getAllOrderHistory() {
-//        List<Order> orders = orderService.getAllUserOrders();
-//        List<OrderResponse> list = orders.stream().map(OrderConverterResponse::changeOrderResponse).collect(Collectors.toList());
-//        return new ResponseEntity<>(new DataResponse(list, HttpStatus.OK), HttpStatus.OK);
-//    }
 
     //Lấy ra danh sách lịch sử mua hàng
     @GetMapping("/order/history")
@@ -78,5 +73,11 @@ public class OrderController {
 
         Page<Order> orders = orderService.getUserOrdersWithPaginationAndSearch(pageable, search);
         return new ResponseEntity<>(new DataResponse(orders, HttpStatus.OK), HttpStatus.OK);
+    }
+//    @AuthenticationPrincipal MyUserDetailCustom myUserDetailCustom : Lấy user đang đăng nhập
+    @GetMapping("/orderDetail/{id}")
+    public ResponseEntity<DataResponse> getOrderById(@PathVariable Long id) {
+        OrderResponse orderResponse = orderService.getOrderByUser(id);
+        return new ResponseEntity<>(new DataResponse(orderResponse, HttpStatus.OK), HttpStatus.OK);
     }
 }

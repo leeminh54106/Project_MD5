@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import sq.project.md5.perfumer.exception.CustomException;
 import sq.project.md5.perfumer.model.dto.req.ProductRequest;
 import sq.project.md5.perfumer.model.dto.resp.ProductDetailResponse;
+import sq.project.md5.perfumer.model.dto.resp.ProductResponse;
 import sq.project.md5.perfumer.model.entity.*;
 import sq.project.md5.perfumer.repository.*;
 import sq.project.md5.perfumer.service.IBrandService;
@@ -222,4 +223,21 @@ public class ProductServiceImpl implements IProductService {
        return productDetails;
     }
 
+    @Override
+    public ProductResponse getProductResponseByProductId(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(()-> new NoSuchElementException("không tìm thấy id"));
+        List<ProductDetailResponse> detailResponseList = getProductDetailByProductId(product.getId());
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setId(product.getId());
+        productResponse.setSku(product.getSku());
+        productResponse.setProductName(product.getProductName());
+        productResponse.setDescription(product.getDescription());
+        productResponse.setGuarantee(product.getGuarantee());
+        productResponse.setInstruct(product.getInstruct());
+        productResponse.setImage(product.getImage());
+        productResponse.setProductDetailResponses(detailResponseList);
+
+        return productResponse;
+    }
 }

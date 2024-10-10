@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -15,6 +16,8 @@ import java.util.Set;
 @Builder
 
 public class JwtResponse {
+
+    private Long id;
     private final String type = "Bearer";//kiểu mã hóa thông tin
     private String accessToken; //cho phép người dùng truy cập tài nguyên ko
     private String username;
@@ -29,5 +32,6 @@ public class JwtResponse {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private Date updatedAt;
     private Boolean isDeleted;
+    List<Long> favourite;
     private Set<String> roles;
 }

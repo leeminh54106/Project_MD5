@@ -1,6 +1,7 @@
 package sq.project.md5.perfumer.model.dto.resp;
 
 import lombok.*;
+import sq.project.md5.perfumer.model.entity.Product;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -10,8 +11,7 @@ import lombok.*;
 
 public class WishListResponse {
     private Long id;
-    private String wishlistProName;
     private Long userId;
-    private Long productId;
+    private Product product;
 
 }

@@ -14,6 +14,7 @@ import sq.project.md5.perfumer.model.dto.resp.TopSellingProductResponse;
 import sq.project.md5.perfumer.model.entity.Product;
 import sq.project.md5.perfumer.service.*;
 import sq.project.md5.perfumer.service.impl.BannerServiceImpl;
+import sq.project.md5.perfumer.service.impl.ProductDetailServiceImpl;
 
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class UserController {
     private final IWishListService wishListService;
 
     private final BannerServiceImpl bannerService;
+    private final ProductDetailServiceImpl productDetailService;
 
     @GetMapping("/listBanner")
     public ResponseEntity<DataResponse> getAllBanners( ) {
@@ -63,6 +65,12 @@ public class UserController {
         return new ResponseEntity<>(new DataResponse(productService.getProductById(id), HttpStatus.OK), HttpStatus.OK);
     }
 
+
+    @GetMapping("/listProductDetail/{id}")
+    public ResponseEntity<DataResponse> getAllProductDetail(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(new DataResponse(productService.  getProductDetailByProductId(id),HttpStatus.OK),HttpStatus.OK);
+    }
+    
     //Danh sách sản phẩm mới nhất
     @GetMapping("/product/newProduct")
     public ResponseEntity<DataResponse> getNewProduct() {
@@ -73,6 +81,12 @@ public class UserController {
     @GetMapping("/product/search")
     public ResponseEntity<DataResponse> searchProduct(@RequestParam(defaultValue = "" )String search) {
         return new ResponseEntity<>(new DataResponse(productService.findProductByProductNameOrDescription(search), HttpStatus.OK),HttpStatus.OK);
+    }
+
+    //Danh sách sản phẩm mới
+    @GetMapping("/product/top")
+    public ResponseEntity<DataResponse> getTopProduct() {
+        return new ResponseEntity<>(new DataResponse(productService.getProuductTop5(), HttpStatus.OK), HttpStatus.OK);
     }
 
 
@@ -96,5 +110,16 @@ public class UserController {
     public ResponseEntity<DataResponse> getTopWishlistProducts(@RequestParam(defaultValue = "5") Integer limit) throws CustomException {
         List<Product> topWishlistProducts = wishListService.getTopWishlistProducts(limit);
         return new ResponseEntity<>(new DataResponse(topWishlistProducts, HttpStatus.OK), HttpStatus.OK);
+    }
+
+    @GetMapping("/productDetails/{id}")
+    public ResponseEntity<DataResponse> getProductDetailById(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(new DataResponse(productDetailService.getProductDetailById(id), HttpStatus.OK), HttpStatus.OK);
+    }
+
+    //    response product
+    @GetMapping("/productByProductResponse/{id}")
+    public ResponseEntity<DataResponse> getProductByProductResponse(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(new DataResponse(productService.getProductResponseByProductId(id), HttpStatus.OK), HttpStatus.OK);
     }
 }

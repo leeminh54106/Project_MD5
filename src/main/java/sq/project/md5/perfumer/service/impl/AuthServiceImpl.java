@@ -19,6 +19,7 @@ import sq.project.md5.perfumer.model.entity.Roles;
 import sq.project.md5.perfumer.model.entity.Users;
 import sq.project.md5.perfumer.repository.IRoleRepository;
 import sq.project.md5.perfumer.repository.IUserRepository;
+import sq.project.md5.perfumer.repository.IWishListRepository;
 import sq.project.md5.perfumer.security.jwt.JwtProvider;
 import sq.project.md5.perfumer.security.principle.MyUserDetailCustom;
 import sq.project.md5.perfumer.service.IAuthService;
@@ -44,6 +45,8 @@ public class AuthServiceImpl implements IAuthService {
     private IUserRepository userRepository;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private IWishListRepository wishListRepository;
 
     @Override
     public boolean register(FormRegister formRegister) throws CustomException {
@@ -111,6 +114,7 @@ public class AuthServiceImpl implements IAuthService {
         MyUserDetailCustom userDetailCustom = (MyUserDetailCustom) authentication.getPrincipal();
         String accessToken = jwtProvider.generateAccessToken(userDetailCustom);
         return JwtResponse.builder()
+                .id(userDetailCustom.getId())
                 .accessToken(accessToken)
                 .username(userDetailCustom.getUsername())
                 .fullName(userDetailCustom.getFullName())
@@ -121,6 +125,7 @@ public class AuthServiceImpl implements IAuthService {
                 .updatedAt(userDetailCustom.getUpdatedAt())
                 .isDeleted(userDetailCustom.getIsDeleted())
                 .phone(userDetailCustom.getPhone())
+                .favourite(wishListRepository.findAllByUserId(userDetailCustom.getId()).stream().map(item -> item.getProduct().getId()).toList())
                 .status(userDetailCustom.getStatus())
                 .roles(userDetailCustom.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()))
                 .build();

@@ -14,6 +14,7 @@ import sq.project.md5.perfumer.repository.IProductRepository;
 import sq.project.md5.perfumer.service.ICommentService;
 import sq.project.md5.perfumer.service.IUserService;
 
+import java.util.Date;
 import java.util.NoSuchElementException;
 
 @Service
@@ -33,7 +34,9 @@ public class CommentServiceImpl implements ICommentService {
                 .content(commentRequest.getContent())
                 .product(product)
                 .status(commentRequest.getStatus())
+                .createdAt(new Date())
                 .build();
+
         return commentRepository.save(comment);
     }
 
@@ -47,9 +50,12 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     public void deleteComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
+        Users user = userService.getCurrentLoggedInUser();
+        Comment comment = commentRepository.findByIdAndUser(commentId, user)
                 .orElseThrow(() -> new NoSuchElementException("bình luận không tồn tại."));
-        comment.setStatus(true);
+        if(!comment.getUser().equals(user)) {
+            throw new IllegalArgumentException("Không tìm thấy bình luận này.");
+        }
         commentRepository.delete(comment);
     }
 
@@ -63,4 +69,27 @@ public class CommentServiceImpl implements ICommentService {
         }
         return commentPage;
     }
+
+    @Override
+    public Page<Comment> getCommentWithPaginationAndSortingByProductId(Long productId, Pageable pageable, String search) {
+        Page<Comment> commentPage;
+        if (search.isEmpty()) {
+            commentPage = commentRepository.findAllByProduct_Id(productId, pageable);
+        } else {
+            commentPage = commentRepository.findAllByProduct_Id(
+                     productId, pageable);
+        }
+        return commentPage;
+    }
+
+    @Override
+    public Comment updateComment(Long commentId, CommentRequest commentRequest) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(()->new NoSuchElementException("không tồn tại user"));
+        if(userService.getCurrentLoggedInUser().getId().equals(comment.getUser().getId())) {
+            comment.setContent(commentRequest.getContent());
+            return commentRepository.save(comment);
+        }
+        throw new NoSuchElementException("comment không phải của bạn");
+    }
 }
+

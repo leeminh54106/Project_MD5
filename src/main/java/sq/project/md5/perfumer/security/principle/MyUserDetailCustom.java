@@ -74,6 +74,7 @@ public class MyUserDetailCustom implements UserDetails {
         return this.authorities;
     }
 
+
     @Override
     public String getUsername() {
         return this.username;

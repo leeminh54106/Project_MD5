@@ -3,7 +3,6 @@ package sq.project.md5.perfumer.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import sq.project.md5.perfumer.model.dto.resp.OrderResponse;
 import sq.project.md5.perfumer.model.dto.resp.TopSellingProductResponse;
 import sq.project.md5.perfumer.model.entity.*;
 import sq.project.md5.perfumer.repository.*;
-import sq.project.md5.perfumer.service.IAddressService;
 import sq.project.md5.perfumer.service.IOrderService;
 import sq.project.md5.perfumer.service.IUserService;
 
@@ -31,17 +29,14 @@ public class OrderServiceImpl implements IOrderService {
 
     private final ICartRepository cartRepository;
 
-    private final IProductRepository productRepository;
-
     private final IProductDetailRepository productDetailRepository;
 
     private final IUserService userService;
 
     private final IOrderDetailRepository orderDetailRepository;
 
-    private final IAddressService addressService;
-
     private final IAddressRepository addressRepository;
+
     private final ICouponRepository couponRepository;
 
 
@@ -371,5 +366,35 @@ public class OrderServiceImpl implements IOrderService {
             throw new NoSuchElementException("Không có đơn hàng nào cho người dùng này.");
         }
         return orders;
-}}
+}
+
+    @Override
+    public OrderResponse getOrderByUser(Long orderId) {
+        Order order = orderRepository.findAllByIdAndUsersId(orderId, userService.getCurrentLoggedInUser().getId()).orElseThrow(() -> new NoSuchElementException("Không có chi tiết sản phẩm nào"));
+        return OrderResponse.builder()
+                .id(order.getId())
+                .username(order.getUsers().getUsername())
+                .userId(order.getUsers().getId())
+                .serialNumber(order.getSerialNumber())
+                .totalPrice(order.getTotalPrice())
+                .receiveName(order.getReceiveName())
+                .receivePhone(order.getReceivePhone())
+                .receiveAddress(order.getReceiveFullAddress())
+                .note(order.getNote())
+                .status(order.getStatus())
+                .createdAt(order.getCreatedAt())
+                .receivedAt(order.getReceivedAt())
+                .orderDetail(
+                        order.getOrderDetails().stream().map(detail ->
+                                        OrderDetailResponse.builder()
+                                                .productDetailId(detail.getProductDetail().getId())
+                                                .name(detail.getName())
+                                                .unitPrice(detail.getUnitPrice())
+                                                .quantity(detail.getOrderQuantity())
+                                                .build())
+                                .collect(Collectors.toList()))
+                .build();
+    }
+}
+
 

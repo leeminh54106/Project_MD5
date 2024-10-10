@@ -3,6 +3,8 @@ package sq.project.md5.perfumer.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 
 @Entity
 @Table(name = "comments")
@@ -21,7 +23,7 @@ public class Comment {
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "product_detail_id")
+    @JoinColumn(name = "product_id")
     private Product product;
 
     private Boolean status;
@@ -29,4 +31,8 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
+
+//    @Temporal(TemporalType.DATE)
+
+    private Date createdAt;
 }
